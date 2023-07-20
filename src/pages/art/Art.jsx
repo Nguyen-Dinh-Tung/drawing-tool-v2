@@ -191,7 +191,6 @@ const Art = () => {
           </DialogContent>
         </Dialog>
       </Grid>
-      <Notification />
     </div>
   );
 };

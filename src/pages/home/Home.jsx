@@ -1,6 +1,7 @@
 import React, { lazy, useState } from "react";
 import Header from "../../base/Header";
 import "../../index.css";
+import Notification from "../../components/notification/Notification";
 const BodyLazy = lazy(() => import("../../base/Body"));
 
 function Home(props) {
@@ -24,6 +25,7 @@ function Home(props) {
         contentModal={contentModal}
         fallback
       />
+      <Notification />
     </div>
   );
 }

@@ -1,51 +1,25 @@
-import React, { useState } from "react";
-import { Snackbar, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { makeStyles } from "@mui/styles";
-const useStyles = makeStyles((theme) => ({
-  notification: {
-    backgroundColor: "#43a047",
-    color: "#ffffff",
-    borderRadius: "8px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "20px",
-    maxWidth: "400px",
-  },
-  closeButton: {
-    color: "#ffffff",
-  },
-}));
+import React from "react";
+import { Snackbar, Stack, Alert } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { setOpen } from "../../redux/slice/notification.slice";
 
 const Notification = () => {
-  const classes = useStyles();
-  const [open, setOpen] = useState(true);
+  const open = useSelector((res) => res.notification.open);
+  const type = useSelector((res) => res.notification.type);
+  const message = useSelector((res) => res.notification.message);
+  const dispatch = useDispatch();
 
   const handleClose = () => {
-    setOpen(false);
+    dispatch(setOpen(false));
   };
-
   return (
-    <Snackbar
-      open={open}
-      autoHideDuration={6000}
-      onClose={handleClose}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
-      }}>
-      <div className={classes.notification}>
-        <span>Success! Your action was completed.</span>
-        <IconButton
-          size="small"
-          aria-label="close"
-          color="inherit"
-          onClick={handleClose}>
-          <CloseIcon className={classes.closeButton} />
-        </IconButton>
-      </div>
-    </Snackbar>
+    <Stack spacing={2} sx={{ width: "100%" }}>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={type} sx={{ width: "100%" }}>
+          {message}
+        </Alert>
+      </Snackbar>
+    </Stack>
   );
 };
 

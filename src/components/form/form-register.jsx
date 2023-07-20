@@ -14,17 +14,20 @@ import { FormControl, IconButton, Radio, RadioGroup } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { registerApi } from "../../api/auth.api";
 
+import { useNotification } from "../../helper/notification";
+
 // TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
 export default function FormRegister() {
+  const [createNotification] = useNotification();
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const res = await registerApi(data);
     if (res.statusCode !== 200) {
-      console.log("fack");
+      createNotification(true, "Register error", "error");
     }
   };
 
