@@ -11,14 +11,36 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { loginApi } from "../../api/auth.api";
+import { useNotification } from "../../helper/notification";
+import { useDispatch } from "react-redux";
+import { hideLoading, showLoading } from "../../redux/slice/loading.slice";
 const defaultTheme = createTheme();
 
 export default function FormLogin(props) {
+  const [createNotification] = useNotification();
+  const dispatch = useDispatch();
+  const [user, setUser] = React.useState({
+    email: "",
+    password: "",
+  });
   const handleSubmit = async (event) => {
+    dispatch(showLoading());
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    const data = new FormData();
+    Object.keys(user).map((e) => {
+      data.append(e, user[e]);
+    });
     const res = await loginApi(data);
-    console.log(res, "res");
+    if (res.statusCode !== 200) {
+      createNotification(true, res.data.message, "error");
+      dispatch(hideLoading());
+      return;
+    }
+    createNotification(true, res.data.message, "success");
+    props.handleShowModal(false);
+  };
+  const handleChane = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
   };
 
   return (
@@ -51,6 +73,8 @@ export default function FormLogin(props) {
               name="email"
               autoComplete="email"
               autoFocus
+              value={user.email}
+              onChange={handleChane}
             />
             <TextField
               margin="normal"
@@ -60,7 +84,9 @@ export default function FormLogin(props) {
               label="Password"
               type="password"
               id="password"
+              value={user.password}
               autoComplete="current-password"
+              onChange={handleChane}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
