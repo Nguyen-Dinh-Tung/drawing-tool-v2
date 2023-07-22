@@ -25,6 +25,7 @@ const defaultTheme = createTheme();
 export default function FormRegister(props) {
   const [createNotification] = useNotification();
   const [selectedDate, setSelectedDate] = React.useState(null);
+  const [fileRender, setFileRender] = React.useState();
   const [user, setUser] = React.useState({
     name: "",
     code: "",
@@ -42,11 +43,14 @@ export default function FormRegister(props) {
   const handleChange = (e) => {
     if (e.target.name !== "avatar")
       setUser({ ...user, [e.target.name]: e.target.value });
-    else setUser({ ...user, avatar: e.target.files[0] });
+    else {
+      setUser({ ...user, avatar: e.target.files[0] });
+      const objectURL = URL.createObjectURL(e.target.files[0]);
+      setFileRender(objectURL);
+    }
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(user);
     const data = new FormData(event.currentTarget.value);
     Object.keys(user).map((e) => {
       data.append(e, user[e]);
@@ -74,8 +78,10 @@ export default function FormRegister(props) {
             flexDirection: "column",
             alignItems: "center",
           }}>
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
+          <Avatar
+            sx={{ m: 1, bgcolor: "secondary.main" }}
+            src={fileRender ? fileRender : ""}>
+            {!fileRender ? <LockOutlinedIcon /> : ""}
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
@@ -227,8 +233,7 @@ export default function FormRegister(props) {
             <Button
               type="submit"
               fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}>
+              sx={{ mt: 3, mb: 2, border: "1px solid #2b81d5" }}>
               Sign Up
             </Button>
           </Box>

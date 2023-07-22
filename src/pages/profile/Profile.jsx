@@ -1,7 +1,62 @@
-import React from "react";
+import "./index.css";
+import React, { useState } from "react";
 import { makeStyles } from "@mui/styles";
 import { Avatar, Box } from "@mui/material";
+import Button from "@mui/material/Button";
+const followButtonStyle = {
+  width: "120px",
+  height: "40px",
+  marginRight: "10px",
+  border: "1px solid #3486d7",
+};
+const getRandomHexColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
 
+const colorArray = [];
+for (let i = 0; i < 100; i++) {
+  const randomColor = getRandomHexColor();
+  colorArray.push(randomColor);
+}
+const messageButtonStyle = {
+  width: "120px",
+  height: "40px",
+  border: "1px solid #3486d7",
+};
+const FollowButton = (props) => {
+  const getRandomColor = () => {
+    const randomIndex = Math.floor(Math.random() * colorArray.length);
+    return colorArray[randomIndex];
+  };
+  return (
+    <Button
+      sx={followButtonStyle}
+      onClick={() => {
+        props.changeBgColor(getRandomColor());
+      }}>
+      Follow
+    </Button>
+  );
+};
+
+const MessageButton = (props) => {
+  return (
+    <Button
+      sx={{
+        ...messageButtonStyle,
+      }}
+      onClick={() => {
+        props.changeBgColor();
+      }}>
+      Inbox
+    </Button>
+  );
+};
 const useStyles = makeStyles((theme) => ({
   container: {
     marginTop: "68px",
@@ -20,7 +75,6 @@ const useStyles = makeStyles((theme) => ({
     height: "60%",
     width: "100%",
   },
-
   rectangle: {
     width: "70%",
     height: "70%",
@@ -32,6 +86,7 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     transform: "translate(-50%, -50%)",
     padding: "40px",
+    display: "inline-block",
   },
   avatar: {
     width: "400px",
@@ -43,8 +98,13 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     justifyContent: "space-around",
   },
-  inforTop: { display: "flex", justifyContent: "space-between" },
-  inforTopRight: { display: "flex" },
+  controlInfor: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "20px",
+  },
+  inforTop: {},
+  inforTopRight: { display: "flex", marginBottom: "20px" },
   inforTopLeft: { display: "flex" },
   inforContact: { margin: "0 10px" },
   inforBottom: {
@@ -66,32 +126,44 @@ const useStyles = makeStyles((theme) => ({
 
 const Profile = () => {
   const classes = useStyles();
-  const contentTopColor = ["#9198e5", "#6875e6", "#ea6196", "#28a6f4"];
-  const randomColor = () => {
-    console.log(
-      contentTopColor[Math.floor(Math.random(contentTopColor.length))]
-    );
-    return contentTopColor[Math.floor(Math.random(contentTopColor.length))];
+  const [isHovered, setIsHovered] = useState(false);
+  const [bgColor, setBgColor] = useState("#E91E63");
+  const changeBgColor = (data) => {
+    setBgColor(data);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
   };
   return (
     <div className={classes.container}>
       <div
         className={classes.contentTop}
         style={{
-          backgroundColor: randomColor(),
+          backgroundColor: bgColor,
         }}></div>
       <div className={classes.contentBottom}></div>
       <Box className={classes.rectangle}>
         <div className={classes.info}>
-          <div className={classes.inforTop}>
-            <div className={classes.inforTopRight}>
-              <p className={classes.inforContact}>Fack</p>
-              <p className={classes.inforContact}>Manager</p>
-              <p className={classes.inforContact}>Developer</p>
+          <div className={classes.controlInfor}>
+            <div className={classes.inforTop}>
+              <div className={classes.inforTopRight}>
+                <p className={classes.inforContact}>Fack</p>
+                <p className={classes.inforContact}>Manager</p>
+                <p className={classes.inforContact}>Developer</p>
+              </div>
+              <div className={classes.inforTopLeft}>
+                <p className={classes.inforContact}>tungnd@bytesoft.net</p>
+                <p className={classes.inforContact}>0337118801</p>
+              </div>
             </div>
-            <div className={classes.inforTopLeft}>
-              <p className={classes.inforContact}>tungnd@bytesoft.net</p>
-              <p className={classes.inforContact}>0337118801</p>
+            <div className="button-group">
+              <FollowButton changeBgColor={changeBgColor} />
+              <MessageButton changeBgColor={changeBgColor} />
             </div>
           </div>
           <div className={classes.inforBottom}>
@@ -102,7 +174,7 @@ const Profile = () => {
               }}>
               Nguyễn Đình Tùng
             </h3>
-            <h3 className={classes.inforBottomName}>14/02/1998</h3>
+            <h3 className={classes.inforBottomName}>14/02/1995</h3>
             <hr className={classes.hr} />
             <p className={classes.inforBottomName}>
               An artist of considerable range, Ryan — the name taken by
@@ -112,17 +184,26 @@ const Profile = () => {
             </p>
           </div>
         </div>
-        <Avatar
-          sx={{
-            width: "260px",
-            height: "260px",
+        <div
+          className={`avatar-container ${isHovered ? "hovered" : ""}`}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          style={{
             position: "absolute",
+            top: 0,
             left: "50%",
-            transform: "translate(-50%, -180%)",
-          }}
-          alt="Remy Sharp"
-          src="./profile-avatar.jpg"
-        />
+            transform: "translate(-50%, -20%)",
+          }}>
+          <Avatar
+            sx={{
+              width: "260px",
+              height: "260px",
+              cursor: "pointer",
+            }}
+            alt="Remy Sharp"
+            src="./profile-avatar.jpg"
+          />
+        </div>
       </Box>
     </div>
   );

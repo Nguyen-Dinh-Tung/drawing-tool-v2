@@ -1,22 +1,8 @@
 import React, { useState } from "react";
 import {
   Box,
-  AppBar,
   Toolbar,
   Typography,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  IconButton,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Paper,
   Button,
   Dialog,
   DialogTitle,
@@ -24,126 +10,99 @@ import {
   DialogContentText,
   DialogActions,
   TextField,
+  InputAdornment,
+  Pagination,
 } from "@mui/material";
-import {
-  Menu as MenuIcon,
-  ChevronLeft as ChevronLeftIcon,
-  Edit as EditIcon,
-} from "@mui/icons-material";
+import Tables from "../../components/table/Tables";
+import { useSelector } from "react-redux";
+import Sidebar from "../../components/side-bar/Silde-bar";
+import SearchIcon from "@mui/icons-material/Search";
+import TableWithPermissions from "../../components/permission/Permission";
 
-const usersData = [
-  { id: 1, name: "John Doe", email: "john@example.com" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com" },
-  // Add more users data here
+const defaultTable = [
+  {
+    id: 1,
+    name: "John Doe",
+    age: 30,
+    email: "john.doe@example.com",
+    height: "159",
+    weight: "159",
+    height: "159",
+    height: "159",
+  },
+  { id: 2, name: "Jane Smith", age: 25, email: "jane.smith@example.com" },
 ];
 
 const Dashboard = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const title = useSelector((state) => state.title.title);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const handleSidebarOpen = () => {
-    setIsSidebarOpen(true);
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
   };
-
-  const handleSidebarClose = () => {
-    setIsSidebarOpen(false);
-  };
-
-  const handleEditUser = (user) => {
-    setSelectedUser(user);
-    setIsEditDialogOpen(true);
-  };
-
-  const handleEditDialogClose = () => {
-    setIsEditDialogOpen(false);
-    setSelectedUser(null);
-  };
-
   return (
     <Box sx={{ display: "flex" }}>
-      <Drawer
-        variant="permanent"
-        sx={{
-          marginTop: "68px",
-          width: 240,
-          zIndex: (theme) => theme.zIndex.drawer,
-        }}>
-        <Toolbar />
-        <Box sx={{ overflow: "auto" }}>
-          <List>
-            <ListItem button>
-              <ListItemIcon>
-                {/* Add icons for other management options */}
-                <EditIcon />
-              </ListItemIcon>
-              <ListItemText primary="Edit Users" />
-            </ListItem>
-            {/* Add more management options */}
-          </List>
-        </Box>
-        <IconButton onClick={handleSidebarClose}>
-          <ChevronLeftIcon />
-        </IconButton>
-      </Drawer>
+      {/* Side bar */}
+      <Sidebar />
 
       {/* Main content */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar />
-        <Typography variant="h5" component="div" gutterBottom>
-          User List
-        </Typography>
-        <TableContainer sx={{ overflowX: "auto" }} component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {usersData.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.id}</TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      onClick={() => handleEditUser(user)}>
-                      Edit
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "240px",
+            justifyContent: "space-between",
+          }}>
+          <Typography
+            sx={{
+              fontSize: "28px",
+              fontWeight: "bold",
+              color: "black",
+              borderBottom: "3px solid black",
+              display: "inline-block",
+              paddingBottom: "8px",
+              marginRight: "16px",
+            }}
+            variant="h5"
+            component="div"
+            gutterBottom>
+            {title}
+          </Typography>
+          <TextField
+            sx={{
+              width: "300px",
+              color: "#ff4081",
+            }}
+            placeholder="Search"
+            variant="outlined"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <SearchIcon color="primary" />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Box>
+        {/* <Tables data={defaultTable} /> */}
+        <TableWithPermissions />
       </Box>
-
-      {/* Edit User Dialog */}
-      <Dialog open={isEditDialogOpen} onClose={handleEditDialogClose}>
-        <DialogTitle>Edit User</DialogTitle>
-        <DialogContent>
-          {selectedUser && (
-            <Box>
-              <DialogContentText>Name: {selectedUser.name}</DialogContentText>
-              <DialogContentText>Email: {selectedUser.email}</DialogContentText>
-              {/* Add more fields for editing user information */}
-              <TextField label="Name" value={selectedUser.name} fullWidth />
-              <TextField label="Email" value={selectedUser.email} fullWidth />
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleEditDialogClose}>Cancel</Button>
-          <Button onClick={handleEditDialogClose} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          position: "absolute",
+          bottom: "4%",
+          left: "50%",
+        }}>
+        <Pagination
+          count={5}
+          page={currentPage}
+          onChange={handleChangePage}
+          color="primary"
+        />
+      </Box>
     </Box>
   );
 };

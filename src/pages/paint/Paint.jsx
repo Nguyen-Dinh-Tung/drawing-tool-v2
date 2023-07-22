@@ -1,7 +1,7 @@
 import React from "react";
 
-function About(props) {
+function Paint(props) {
   return <div>Hello</div>;
 }
 
-export default About;
+export default Paint;

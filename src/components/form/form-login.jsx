@@ -95,8 +95,7 @@ export default function FormLogin(props) {
             <Button
               type="submit"
               fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}>
+              sx={{ mt: 3, mb: 2, border: "1px solid #2b81d5" }}>
               Sign In
             </Button>
           </Box>
