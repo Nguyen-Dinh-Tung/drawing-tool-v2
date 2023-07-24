@@ -1,30 +1,36 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
-import Formlogin from "../form/form-login";
+import { useDispatch, useSelector } from "react-redux";
+import { hiddenModal } from "../../redux/slice/modal.slice";
+import FormLogin from "../form/form-login";
+import FormRegister from "../form/form-register";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function Modal(props) {
+  const open = useSelector((state) => state.modal.open);
+  const ctx = useSelector((state) => state.modal.content);
+  const content = {
+    login: <FormLogin />,
+    register: <FormRegister />,
+  };
+  const dispatch = useDispatch();
   const handleClose = () => {
-    props.handleShowModal(false);
+    dispatch(hiddenModal());
   };
   return (
     <div>
       <Dialog
-        open={props.showModal}
+        open={open}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description">
-        <DialogContent>{props.contentModal}</DialogContent>
+        <DialogContent>{content[ctx]}</DialogContent>
       </Dialog>
     </div>
   );

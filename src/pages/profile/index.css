@@ -1,0 +1,18 @@
+.avatar-container {
+  position: relative;
+  overflow: hidden;
+  /* Kích thước ảnh gốc */
+  width: 260px;
+  height: 260px;
+}
+
+.avatar-container img {
+  /* Chuyển đổi ảnh khi hover */
+  transition: transform 0.3s ease;
+}
+
+/* Hiệu ứng khi hover vào ảnh */
+.avatar-container.hovered img {
+  /* Phóng to ảnh khi hover */
+  transform: scale(1.1);
+}

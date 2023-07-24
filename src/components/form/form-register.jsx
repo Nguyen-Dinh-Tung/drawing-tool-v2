@@ -13,22 +13,65 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { FormControl, IconButton, Radio, RadioGroup } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { registerApi } from "../../api/auth.api";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import { useNotification } from "../../helper/notification";
-
-// TODO remove, this demo shouldn't need to reset the theme.
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { useDispatch } from "react-redux";
+import { hideLoading, showLoading } from "../../redux/slice/loading.slice";
 
 const defaultTheme = createTheme();
 
-export default function FormRegister() {
+export default function FormRegister(props) {
   const [createNotification] = useNotification();
+  const [selectedDate, setSelectedDate] = React.useState(null);
+  const [fileRender, setFileRender] = React.useState();
+  const [user, setUser] = React.useState({
+    name: "",
+    code: "",
+    nickname: "",
+    email: "",
+    birthDay: "",
+    gender: "",
+    address: "",
+    avatar: "",
+    phoneNumber: "",
+    password: "",
+  });
+  const dispatch = useDispatch();
+  const formRef = React.useRef(null);
+  const handleChange = (e) => {
+    if (e.target.name !== "avatar")
+      setUser({ ...user, [e.target.name]: e.target.value });
+    else {
+      setUser({ ...user, avatar: e.target.files[0] });
+      const objectURL = URL.createObjectURL(e.target.files[0]);
+      setFileRender(objectURL);
+    }
+  };
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const res = await registerApi(data);
-    if (res.statusCode !== 200) {
-      createNotification(true, "Register error", "error");
-    }
+    const data = new FormData(event.currentTarget.value);
+    Object.keys(user).map((e) => {
+      data.append(e, user[e]);
+    });
+    dispatch(showLoading());
+    await registerApi(data)
+      .then((res) => {
+        if (res.data.isError) {
+          createNotification(true, res.data.message, "error");
+          return;
+        }
+        createNotification(true, res.data.message, "true");
+      })
+      .catch((e) => {
+        if (e) {
+          createNotification(true, e.response.data.message, "error");
+          return;
+        }
+      });
+    dispatch(hideLoading());
+    if (formRef.current) formRef.current.reset();
   };
 
   return (
@@ -41,15 +84,17 @@ export default function FormRegister() {
             flexDirection: "column",
             alignItems: "center",
           }}>
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
+          <Avatar
+            sx={{ m: 1, bgcolor: "secondary.main" }}
+            src={fileRender ? fileRender : ""}>
+            {!fileRender ? <LockOutlinedIcon /> : ""}
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
           <Box
             component="form"
-            noValidate
+            ref={formRef}
             onSubmit={handleSubmit}
             sx={{ mt: 3 }}>
             <Grid container spacing={2}>
@@ -61,6 +106,8 @@ export default function FormRegister() {
                   fullWidth
                   id="nickname"
                   label="Nickname"
+                  onChange={handleChange}
+                  value={user.nickname}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -72,6 +119,8 @@ export default function FormRegister() {
                   name="password"
                   type="password"
                   autoComplete="password"
+                  onChange={handleChange}
+                  value={user.password}
                 />
               </Grid>
               <Grid item xs={6} sm={6}>
@@ -82,6 +131,8 @@ export default function FormRegister() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  onChange={handleChange}
+                  value={user.email}
                 />
               </Grid>
               <Grid item xs={6} sm={6}>
@@ -92,6 +143,8 @@ export default function FormRegister() {
                   label="Your code"
                   name="code"
                   autoComplete="code"
+                  onChange={handleChange}
+                  value={user.code}
                 />
               </Grid>
               <Grid item xs={6} sm={6}>
@@ -102,17 +155,22 @@ export default function FormRegister() {
                   label="Phone number"
                   name="phoneNumber"
                   autoComplete="phoneNumber"
+                  onChange={handleChange}
+                  value={user.phoneNumber}
                 />
               </Grid>
               <Grid item xs={6} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="BirthDay"
-                  label="Date of birth"
-                  name="birthDay"
-                  autoComplete="birthDay"
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    onChange={(value) => {
+                      setUser({
+                        ...user,
+                        birthDay: new Date(value).toISOString(),
+                      });
+                      setSelectedDate(new Date(value).toISOString());
+                    }}
+                  />
+                </LocalizationProvider>
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -121,6 +179,8 @@ export default function FormRegister() {
                   name="name"
                   label="Full name"
                   id="name"
+                  onChange={handleChange}
+                  value={user.name}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -130,6 +190,8 @@ export default function FormRegister() {
                   name="address"
                   label="Your address"
                   id="address"
+                  onChange={handleChange}
+                  value={user.address}
                 />
               </Grid>
               <Grid item xs={12} sx={{ textAlign: "center" }}>
@@ -142,6 +204,7 @@ export default function FormRegister() {
                     name="avatar"
                     accept="image/*"
                     type="file"
+                    onChange={handleChange}
                     required
                   />
                   <PhotoCamera sx={{ fontSize: "40px" }} />
@@ -152,19 +215,20 @@ export default function FormRegister() {
                   <RadioGroup
                     row
                     aria-labelledby="demo-row-radio-buttons-group-label"
+                    onChange={handleChange}
                     name="gender">
                     <FormControlLabel
-                      value="0"
+                      value={0}
                       control={<Radio />}
                       label="Female"
                     />
                     <FormControlLabel
-                      value="1"
+                      value={1}
                       control={<Radio />}
                       label="Male"
                     />
                     <FormControlLabel
-                      value="2"
+                      value={2}
                       control={<Radio />}
                       label="Other"
                     />
@@ -175,8 +239,7 @@ export default function FormRegister() {
             <Button
               type="submit"
               fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}>
+              sx={{ mt: 3, mb: 2, border: "1px solid #2b81d5" }}>
               Sign Up
             </Button>
           </Box>

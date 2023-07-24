@@ -7,13 +7,12 @@ import {
   Dialog,
   DialogContent,
   Typography,
-  TextField,
   useTheme,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CommentIcon from "@mui/icons-material/Comment";
 import { makeStyles } from "@mui/styles";
-import Notification from "../../components/notification/Notification";
+import CommentSection from "../../components/comment/Comment";
 const useStyles = makeStyles((theme) => ({
   imageContainer: {
     position: "relative",
@@ -81,7 +80,6 @@ const Art = () => {
   const theme = useTheme();
   const [openDialog, setOpenDialog] = useState(false);
   const [currentImage, setCurrentImage] = useState(null);
-  const [comment, setComment] = useState("");
   const handleImageClick = (image) => {
     setOpenDialog(true);
     setCurrentImage(image);
@@ -91,7 +89,7 @@ const Art = () => {
     setOpenDialog(false);
     setCurrentImage(null);
   };
-
+  const handleClickLike = () => {};
   const images = [
     "https://cdn.pixabay.com/photo/2016/12/19/21/36/woman-1919143_1280.jpg",
     "https://cdn.pixabay.com/photo/2017/11/29/09/15/paint-2985569_1280.jpg",
@@ -114,7 +112,7 @@ const Art = () => {
               />
               <div className={classes.buttonContainer}>
                 <Tooltip title="Like" className={classes.likeButton}>
-                  <IconButton color="primary">
+                  <IconButton color="primary" onClick={handleClickLike}>
                     <FavoriteIcon />
                   </IconButton>
                 </Tooltip>
@@ -124,7 +122,10 @@ const Art = () => {
                 <Tooltip
                   title="View comments"
                   className={classes.commentButton}>
-                  <IconButton color="primary" sx={{ color: "white" }}>
+                  <IconButton
+                    color="primary"
+                    sx={{ color: "white" }}
+                    onClick={handleImageClick}>
                     <CommentIcon />
                   </IconButton>
                 </Tooltip>
@@ -143,50 +144,7 @@ const Art = () => {
                   style={{ width: "100%" }}
                 />
               </div>
-              <div className={classes.commentSection}>
-                <Typography variant="h6">Comments</Typography>
-                <div>
-                  {/* Replace this div with your actual comment section */}
-                  <div className={classes.comment}>
-                    <Typography
-                      variant="body1"
-                      className={classes.commentAuthor}>
-                      John Doe
-                    </Typography>
-                    <Typography variant="body2">
-                      This is a beautiful photo! I love the colors and
-                      composition.
-                    </Typography>
-                  </div>
-                  <div className={classes.comment}>
-                    <Typography
-                      variant="body1"
-                      className={classes.commentAuthor}>
-                      Jane Smith
-                    </Typography>
-                    <Typography variant="body2">Wow! Amazing shot!</Typography>
-                  </div>
-                  {/* Add more comments as needed */}
-                </div>
-                <TextField
-                  variant="outlined"
-                  label="Write a comment"
-                  fullWidth
-                  margin="normal"
-                  value={comment}
-                  className={classes.commentTextField}
-                  onChange={(e) => {
-                    setComment(e.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      console.log(comment);
-                      setComment("");
-                    }
-                  }}
-                  // Add comment handling logic here (e.g., using state or API)
-                />
-              </div>
+              <CommentSection />
             </div>
           </DialogContent>
         </Dialog>
@@ -196,3 +154,47 @@ const Art = () => {
 };
 
 export default Art;
+// {/* <div className={classes.commentSection}>
+//                 <Typography variant="h6">Comments</Typography>
+//                 <div>
+//                   {/* Replace this div with your actual comment section */}
+//                   <div className={classes.comment}>
+//                     <Typography
+//                       variant="body1"
+//                       className={classes.commentAuthor}>
+//                       John Doe
+//                     </Typography>
+//                     <Typography variant="body2">
+//                       This is a beautiful photo! I love the colors and
+//                       composition.
+//                     </Typography>
+//                   </div>
+//                   <div className={classes.comment}>
+//                     <Typography
+//                       variant="body1"
+//                       className={classes.commentAuthor}>
+//                       Jane Smith
+//                     </Typography>
+//                     <Typography variant="body2">Wow! Amazing shot!</Typography>
+//                   </div>
+//                   {/* Add more comments as needed */}
+//                 </div>
+//                 <TextField
+//                   variant="outlined"
+//                   label="Write a comment"
+//                   fullWidth
+//                   margin="normal"
+//                   value={comment}
+//                   className={classes.commentTextField}
+//                   onChange={(e) => {
+//                     setComment(e.target.value);
+//                   }}
+//                   onKeyDown={(e) => {
+//                     if (e.key === "Enter") {
+//                       console.log(comment);
+//                       setComment("");
+//                     }
+//                   }}
+//                   // Add comment handling logic here (e.g., using state or API)
+//                 />
+//               </div> */}

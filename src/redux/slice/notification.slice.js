@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const notificationSlice = createSlice({
   name: "id",
   initialState: {
-    open: true,
+    open: false,
     message: "This is a success message!",
     type: "success",
   },
