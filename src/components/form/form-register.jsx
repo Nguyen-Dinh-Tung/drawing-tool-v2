@@ -56,16 +56,22 @@ export default function FormRegister(props) {
       data.append(e, user[e]);
     });
     dispatch(showLoading());
-    const res = await registerApi(data);
-    if (res.statusCode !== 200) {
-      createNotification(true, res.data.message, "error");
-      dispatch(hideLoading());
-      return;
-    }
-    createNotification(true, res.data.message, "success");
-    props.handleShowModal(false);
-    formRef.current.reset();
+    await registerApi(data)
+      .then((res) => {
+        if (res.data.isError) {
+          createNotification(true, res.data.message, "error");
+          return;
+        }
+        createNotification(true, res.data.message, "true");
+      })
+      .catch((e) => {
+        if (e) {
+          createNotification(true, e.response.data.message, "error");
+          return;
+        }
+      });
     dispatch(hideLoading());
+    if (formRef.current) formRef.current.reset();
   };
 
   return (

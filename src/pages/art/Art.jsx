@@ -89,9 +89,7 @@ const Art = () => {
     setOpenDialog(false);
     setCurrentImage(null);
   };
-  const handleClickLike = () => {
-    console.log("fack");
-  };
+  const handleClickLike = () => {};
   const images = [
     "https://cdn.pixabay.com/photo/2016/12/19/21/36/woman-1919143_1280.jpg",
     "https://cdn.pixabay.com/photo/2017/11/29/09/15/paint-2985569_1280.jpg",

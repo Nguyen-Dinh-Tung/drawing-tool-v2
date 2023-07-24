@@ -20,23 +20,29 @@ import { useNavigate } from "react-router";
 import NotesIcon from "@mui/icons-material/Notes";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import EngineeringIcon from "@mui/icons-material/Engineering";
+import { setTarget } from "../../redux/slice/table.slice";
 const Sidebar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const clickUser = () => {
     dispatch(setTitle("Users dashboard"));
+    dispatch(setTarget("user"));
   };
   const clickReport = () => {
     dispatch(setTitle("Report dashboard"));
+    dispatch(setTarget("report"));
   };
   const clickComments = () => {
     dispatch(setTitle("Comments dashboard"));
+    dispatch(setTarget("comments"));
   };
   const clickRate = () => {
     dispatch(setTitle("Rate dashboard"));
+    dispatch(setTarget("rate"));
   };
   const clickDecentralization = () => {
     dispatch(setTitle("Decentralization dashboard"));
+    dispatch(setTarget("permission"));
   };
   const sidebarContent = (
     <Box sx={{ p: 2, width: "240px" }}>
@@ -71,11 +77,11 @@ const Sidebar = () => {
           <ListItemText primary="Rate" onClick={clickRate} />
         </ListItem>
 
-        <ListItem button>
+        <ListItem button onClick={clickDecentralization}>
           <ListItemIcon>
             <EngineeringIcon />
           </ListItemIcon>
-          <ListItemText primary="Decentralization" onClick={clickRate} />
+          <ListItemText primary="Decentralization" />
         </ListItem>
       </List>
     </Box>

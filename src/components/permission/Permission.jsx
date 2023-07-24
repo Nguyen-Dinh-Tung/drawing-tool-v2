@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Table,
   TableBody,
@@ -11,9 +11,9 @@ import {
   Checkbox,
 } from "@mui/material";
 import _ from "lodash";
-
+import { useNotification } from "../../helper/notification";
 const columns = [
-  { field: "User", header: "User" },
+  { field: "user", header: "User" },
   { field: "all", header: "All" },
   { field: "First", header: "First" },
   { field: "Second", header: "Second" },
@@ -30,19 +30,30 @@ const managerData = [
 
 const TableWithPermissions = () => {
   const [data, setData] = useState(managerData);
-  const handleCheck = (e, row, column) => {
-    const groupDataByUser = _.groupBy(data, "user");
-    if (e.target.checked !== undefined) {
-      const newData = data.map((element) => {
-        return groupDataByUser[row.user] &&
-          groupDataByUser[row.user][0].user === element.user
-          ? {
-              ...groupDataByUser[row.user][0],
-              [column.field]: e.target.checked,
-            }
-          : element;
-      });
-      setData(newData);
+  const [createNotification] = useNotification();
+  const handleCheck = async (e, row, column) => {
+    const index = data.indexOf(row);
+    const checkedStatus = e.target.checked;
+    if (checkedStatus !== undefined) {
+      if (column.field === "all") {
+        Object.keys(row).some((key) => {
+          if (key !== "user") {
+            row[key] = checkedStatus;
+          }
+        });
+      } else {
+        checkedStatus
+          ? (row[column.field] = checkedStatus)
+          : (row[column.field] = checkedStatus);
+        if (!checkedStatus) {
+          row["all"] = false;
+        }
+      }
+      data[index] = row;
+      setData([...data]);
+      await setTimeout(() => {
+        createNotification(true, "Update permission success", "success");
+      }, 2000);
     }
   };
   return (
@@ -59,21 +70,24 @@ const TableWithPermissions = () => {
           <TableBody>
             {data.map((row, rowIndex) => (
               <TableRow key={rowIndex}>
-                {columns.map((column, colIndex) => (
-                  <TableCell key={colIndex}>
-                    {column.field === "user" ? (
-                      row[column.field]
-                    ) : (
-                      <Checkbox
-                        color="primary"
-                        checked={row[column.field]}
-                        onClick={(e) => {
-                          handleCheck(e, row, column);
-                        }}
-                      />
-                    )}
-                  </TableCell>
-                ))}
+                {columns.map((column, colIndex) => {
+                  return (
+                    <TableCell key={colIndex}>
+                      {column.field === "user" ? (
+                        <p>{row[column.field]}</p>
+                      ) : (
+                        <Checkbox
+                          color="primary"
+                          checked={row[column.field]}
+                          name={column.field}
+                          onClick={(e) => {
+                            handleCheck(e, row, column);
+                          }}
+                        />
+                      )}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             ))}
           </TableBody>

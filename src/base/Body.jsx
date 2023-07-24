@@ -5,11 +5,7 @@ const Body = (props) => {
   return (
     <div className="body">
       <Outlet />
-      <Modal
-        showModal={props.showModal}
-        handleShowModal={props.handleShowModal}
-        contentModal={props.contentModal}
-      />
+      <Modal />
     </div>
   );
 };

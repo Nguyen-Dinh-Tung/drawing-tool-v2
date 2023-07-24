@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Toolbar,
@@ -32,20 +32,36 @@ const defaultTable = [
   },
   { id: 2, name: "Jane Smith", age: 25, email: "jane.smith@example.com" },
 ];
+const notificationMock = [
+  {
+    id: 1,
+    name: "John Doe",
+    content: "Wow ",
+  },
+  { id: 2, name: "Jane Smith", content: 25 },
+];
 
 const Dashboard = () => {
   const title = useSelector((state) => state.title.title);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const table = useSelector((state) => state.table.target);
+  const [data, setData] = useState(defaultTable);
   const handleChangePage = (event, newPage) => {
     setCurrentPage(newPage);
   };
+  const selectData = {
+    user: defaultTable,
+    comments: notificationMock,
+    rate: notificationMock,
+    report: notificationMock,
+  };
+
+  useEffect(() => {
+    if (table !== "permission") setData(selectData[table]);
+  }, [table]);
   return (
     <Box sx={{ display: "flex" }}>
-      {/* Side bar */}
       <Sidebar />
-
-      {/* Main content */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Box
           sx={{
@@ -85,8 +101,11 @@ const Dashboard = () => {
             }}
           />
         </Box>
-        {/* <Tables data={defaultTable} /> */}
-        <TableWithPermissions />
+        {table === "permission" ? (
+          <TableWithPermissions />
+        ) : (
+          <Tables data={data} />
+        )}
       </Box>
       <Box
         sx={{

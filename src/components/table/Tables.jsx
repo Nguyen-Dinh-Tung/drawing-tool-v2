@@ -19,9 +19,8 @@ const Tables = ({ data }) => {
   const [scrollColumns, setScrollColumns] = useState([]);
 
   useEffect(() => {
-    // Giữ cố định 2 trường đầu tiên
+    setHeader(data.length ? Object.keys(data[0]) : []);
     setFixedColumns(header.slice(0, 2));
-    // Trường còn lại cho phép scroll ngang
     setScrollColumns(header.slice(2));
   }, [header]);
 
@@ -58,7 +57,7 @@ const Tables = ({ data }) => {
                   <TableCell>
                     {row.avatar ? (
                       <MuiAvatar
-                        src={row.avatar} // Chỗ này là URL hoặc base64 của avatar trong dữ liệu
+                        src={row.avatar}
                         sx={{ width: 40, height: 40 }}
                       />
                     ) : (

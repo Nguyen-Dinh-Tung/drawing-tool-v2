@@ -1,8 +1,10 @@
 import "./index.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import { Avatar, Box } from "@mui/material";
 import Button from "@mui/material/Button";
+import { getMeApi } from "../../api/auth.api";
+import { useNotification } from "../../helper/notification";
 const followButtonStyle = {
   width: "120px",
   height: "40px",
@@ -128,6 +130,8 @@ const Profile = () => {
   const classes = useStyles();
   const [isHovered, setIsHovered] = useState(false);
   const [bgColor, setBgColor] = useState("#E91E63");
+  const [profile, setProfile] = useState();
+  const [createNotification] = useNotification();
   const changeBgColor = (data) => {
     setBgColor(data);
   };
@@ -139,6 +143,25 @@ const Profile = () => {
   const handleMouseLeave = () => {
     setIsHovered(false);
   };
+  const gender = {
+    0: "Female",
+    1: "Male",
+    3: "Other",
+  };
+  useEffect(() => {
+    getMeApi()
+      .then((res) => {
+        if (res.data.isError) {
+          createNotification(true, res.data.message, "error");
+        }
+        setProfile(res.data.result);
+      })
+      .catch((e) => {
+        if (e) {
+          createNotification(true, e.response.data.message, "error");
+        }
+      });
+  }, []);
   return (
     <div className={classes.container}>
       <div
@@ -152,13 +175,21 @@ const Profile = () => {
           <div className={classes.controlInfor}>
             <div className={classes.inforTop}>
               <div className={classes.inforTopRight}>
-                <p className={classes.inforContact}>Fack</p>
+                <p className={classes.inforContact}>
+                  {profile && gender[profile.gender]}
+                </p>
                 <p className={classes.inforContact}>Manager</p>
-                <p className={classes.inforContact}>Developer</p>
+                <p className={classes.inforContact}>
+                  {profile && profile.code ? profile.code : "None"}
+                </p>
               </div>
               <div className={classes.inforTopLeft}>
-                <p className={classes.inforContact}>tungnd@bytesoft.net</p>
-                <p className={classes.inforContact}>0337118801</p>
+                <p className={classes.inforContact}>
+                  {profile && profile.email}
+                </p>
+                <p className={classes.inforContact}>
+                  {profile && profile.phoneNumber}
+                </p>
               </div>
             </div>
             <div className="button-group">
@@ -172,9 +203,11 @@ const Profile = () => {
               style={{
                 fontSize: "20px",
               }}>
-              Nguyễn Đình Tùng
+              {profile && profile.name}
             </h3>
-            <h3 className={classes.inforBottomName}>14/02/1995</h3>
+            <h3 className={classes.inforBottomName}>
+              {profile && new Date(profile.birthDay).toDateString()}
+            </h3>
             <hr className={classes.hr} />
             <p className={classes.inforBottomName}>
               An artist of considerable range, Ryan — the name taken by
