@@ -234,7 +234,11 @@ const Profile = () => {
               cursor: "pointer",
             }}
             alt="Remy Sharp"
-            src="./profile-avatar.jpg"
+            src={
+              profile && profile.avatar
+                ? profile.avatar
+                : "./profile-avatar.jpg"
+            }
           />
         </div>
       </Box>

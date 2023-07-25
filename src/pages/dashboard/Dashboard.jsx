@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Toolbar,
   Typography,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
   TextField,
   InputAdornment,
   Pagination,
@@ -18,6 +11,8 @@ import { useSelector } from "react-redux";
 import Sidebar from "../../components/side-bar/Silde-bar";
 import SearchIcon from "@mui/icons-material/Search";
 import TableWithPermissions from "../../components/permission/Permission";
+import { useNotification } from "../../helper/notification";
+import { findAll } from "../../api/user.api";
 
 const defaultTable = [
   {
@@ -32,43 +27,57 @@ const defaultTable = [
   },
   { id: 2, name: "Jane Smith", age: 25, email: "jane.smith@example.com" },
 ];
-const notificationMock = [
-  {
-    id: 1,
-    name: "John Doe",
-    content: "Wow ",
-  },
-  { id: 2, name: "Jane Smith", content: 25 },
-];
 
 const Dashboard = () => {
   const title = useSelector((state) => state.title.title);
   const [currentPage, setCurrentPage] = useState(1);
   const table = useSelector((state) => state.table.target);
   const [data, setData] = useState(defaultTable);
+  const [createNotification] = useNotification();
   const handleChangePage = (event, newPage) => {
     setCurrentPage(newPage);
   };
-  const selectData = {
-    user: defaultTable,
-    comments: notificationMock,
-    rate: notificationMock,
-    report: notificationMock,
-  };
 
   useEffect(() => {
-    if (table !== "permission") setData(selectData[table]);
-  }, [table]);
+    const filter = {
+      filter: {
+        searchField: "",
+        code: "",
+        name: "",
+      },
+      orderBy: [],
+      pageIndex: 0,
+      pageSize: 10,
+      showTotal: true,
+      listFilter: [],
+    };
+    findAll(filter)
+      .then((res) => {
+        if (res.data.isError) {
+          createNotification(true, res.data.message, "error");
+          return;
+        }
+        setData(res.data.result.data);
+      })
+      .catch((e) => {
+        if (e) {
+          createNotification(true, e.response.data.message, "error");
+          return;
+        }
+      });
+  }, [table === "user" ? table : ""]);
   return (
     <Box sx={{ display: "flex" }}>
       <Sidebar />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1 }}>
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             marginLeft: "240px",
             justifyContent: "space-between",
+            width: "calc(100vw - 240px)",
+            marginTop: "20px",
           }}>
           <Typography
             sx={{
@@ -78,7 +87,7 @@ const Dashboard = () => {
               borderBottom: "3px solid black",
               display: "inline-block",
               paddingBottom: "8px",
-              marginRight: "16px",
+              marginLeft: "16px",
             }}
             variant="h5"
             component="div"
@@ -89,6 +98,7 @@ const Dashboard = () => {
             sx={{
               width: "300px",
               color: "#ff4081",
+              marginRight: "16px",
             }}
             placeholder="Search"
             variant="outlined"
@@ -109,8 +119,6 @@ const Dashboard = () => {
       </Box>
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "center",
           position: "absolute",
           bottom: "4%",
           left: "50%",

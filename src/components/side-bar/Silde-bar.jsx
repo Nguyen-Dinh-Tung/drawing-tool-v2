@@ -16,14 +16,12 @@ import {
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import { useDispatch } from "react-redux";
 import { setTitle } from "../../redux/slice/title.slice";
-import { useNavigate } from "react-router";
 import NotesIcon from "@mui/icons-material/Notes";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import EngineeringIcon from "@mui/icons-material/Engineering";
 import { setTarget } from "../../redux/slice/table.slice";
 const Sidebar = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const clickUser = () => {
     dispatch(setTitle("Users dashboard"));
     dispatch(setTarget("user"));
@@ -47,7 +45,7 @@ const Sidebar = () => {
   const sidebarContent = (
     <Box sx={{ p: 2, width: "240px" }}>
       <Typography variant="h6" sx={{ marginBottom: "16px" }}>
-        Sidebar Content
+        Final Project
       </Typography>
       <List>
         <ListItem button onClick={clickUser}>
