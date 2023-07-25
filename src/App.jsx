@@ -22,9 +22,9 @@ function App() {
         <Route path="/" element={<Home />}>
           <Route path="/paint" element={<Paint />} />
           <Route path="/art" element={<Art />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           {token ? <Route path="/profile" element={<Profile />} /> : ""}
         </Route>
+        <Route path="/admin" element={<Dashboard />}></Route>
       </Routes>
     </BrowserRouter>
   );

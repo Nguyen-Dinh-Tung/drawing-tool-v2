@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Typography,
   TextField,
@@ -11,6 +11,8 @@ import {
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SendIcon from "@mui/icons-material/Send";
 import { makeStyles } from "@mui/styles";
+import { useNotification } from "../../helper/notification";
+import { artComments, sendComment } from "../../api/art.api";
 const useStyles = makeStyles((theme) => ({
   commentSection: {
     // Các thuộc tính CSS tùy chỉnh cho comment section
@@ -40,24 +42,52 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CommentSection = () => {
+const CommentSection = ({ art }) => {
   const [comment, setComment] = useState("");
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [selectedCommentId, setSelectedCommentId] = useState(null);
   const classes = useStyles();
-  const [commentsData, setCommentsData] = useState([
-    {
-      id: 1,
-      author: "John Doe",
-      content: "This is a beautiful photo! I love the colors and composition.",
-    },
-    { id: 2, author: "Jane Smith", content: "Wow! Amazing shot!" },
-  ]);
-
+  const [commentsData, setCommentsData] = useState([]);
+  const [createNotification] = useNotification();
+  const [reRender, setReRender] = useState("");
   const handleMenuOpen = (event, commentId) => {
     setMenuAnchorEl(event.currentTarget);
     setSelectedCommentId(commentId);
   };
+
+  useEffect(() => {
+    const filter = {
+      filter: {
+        searchField: "",
+        code: "",
+        name: "",
+      },
+      orderBy: [
+        {
+          fieldName: "",
+          direction: 0,
+        },
+      ],
+      pageIndex: 0,
+      pageSize: -1,
+      showTotal: true,
+      listFilter: [],
+    };
+    artComments(filter, art.id)
+      .then((res) => {
+        if (res.data.isError) {
+          createNotification(true, res.data.message, "error");
+          return;
+        }
+        setCommentsData(res.data.result.data);
+      })
+      .catch((e) => {
+        if (e) {
+          createNotification(true, e.response.data.message, "error");
+          return;
+        }
+      });
+  }, [art, reRender]);
 
   const handleMenuClose = () => {
     setMenuAnchorEl(null);
@@ -65,15 +95,66 @@ const CommentSection = () => {
   };
 
   const handleSendComment = () => {
+    if (!comment) return;
     const newComment = {
-      id: commentsData[commentsData.length - 1].id + 1,
-      author: "ramdon",
-      content: comment,
+      artId: art.id,
+      text: comment,
     };
-    commentsData.push(newComment);
-    setCommentsData(commentsData);
+    sendComment(newComment)
+      .then((res) => {
+        if (res.data.isError) {
+          createNotification(true, res.data.message, "error");
+          return;
+        }
+        setReRender(Date.now());
+      })
+      .catch((e) => {
+        if (e) {
+          createNotification(true, e.response.data.message, "error");
+          return;
+        }
+      });
     setComment("");
   };
+
+  // const renderChildComments = (childComments) => {
+  //   if (!childComments || childComments.length === 0) {
+  //     return null;
+  //   }
+
+  //   return childComments.map((childComment) => (
+  //     <div key={childComment.id} className={classes.comment}>
+  //       {/* Render child comment content */}
+  //       <div className={classes.commentSubContent}>
+  //         <Avatar
+  //           src={childComment && childComment.userAvatar}
+  //           className={classes.commentAvatar}
+  //         />
+  //         <div className={classes.commentContent}>
+  //           <Typography variant="body1" className={classes.commentUserName}>
+  //             {childComment && childComment.userName}
+  //           </Typography>
+  //           <Typography variant="body2">{childComment.text}</Typography>
+  //         </div>
+  //       </div>
+  //       {/* Render child comment menu */}
+  //       <IconButton onClick={(event) => handleMenuOpen(event, childComment.id)}>
+  //         <MoreVertIcon />
+  //       </IconButton>
+  //       <Menu
+  //         sx={{ float: "right" }}
+  //         anchorEl={menuAnchorEl}
+  //         open={selectedCommentId === childComment.id}
+  //         onClose={handleMenuClose}
+  //         onClick={handleMenuClose}>
+  //         <MenuItem>Report</MenuItem>
+  //         {/* Add more menu items if needed */}
+  //       </Menu>
+  //       {/* Render child comments recursively */}
+  //       {renderChildComments(childComment.children)}
+  //     </div>
+  //   ));
+  // };
 
   return (
     <div className={classes.commentSection}>
@@ -83,17 +164,20 @@ const CommentSection = () => {
       <div>
         {commentsData.map((commentData) => (
           <div key={commentData.id} className={classes.comment}>
+            {/* Render parent comment content */}
             <div className={classes.commentSubContent}>
-              <Avatar className={classes.commentAvatar}>
-                {commentData.author.charAt(0)}
-              </Avatar>
+              <Avatar
+                src={commentData && commentData.userAvatar}
+                className={classes.commentAvatar}
+              />
               <div className={classes.commentContent}>
                 <Typography variant="body1" className={classes.commentUserName}>
-                  {commentData.author}
+                  {commentData && commentData.userName}
                 </Typography>
-                <Typography variant="body2">{commentData.content}</Typography>
+                <Typography variant="body2">{commentData.text}</Typography>
               </div>
             </div>
+            {/* Render parent comment menu */}
             <IconButton
               onClick={(event) => handleMenuOpen(event, commentData.id)}>
               <MoreVertIcon />
@@ -107,6 +191,12 @@ const CommentSection = () => {
               <MenuItem>Report</MenuItem>
               {/* Add more menu items if needed */}
             </Menu>
+            {/* Render child comments */}
+            {/* {renderChildComments(
+              commentsData.map((e) =>
+                e.commentParrentId ? e.commentParrentId : ""
+              )
+            )} */}
           </div>
         ))}
       </div>
