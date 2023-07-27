@@ -3,6 +3,7 @@ import Header from "../../base/Header";
 import "../../index.css";
 import Notification from "../../components/notification/Notification";
 import Loading from "../../components/loading/loading";
+import Select from "../../components/select/Select";
 const BodyLazy = lazy(() => import("../../base/Body"));
 
 function Home(props) {

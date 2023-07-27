@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { hiddenModal } from "../../redux/slice/modal.slice";
 import FormLogin from "../form/form-login";
 import FormRegister from "../form/form-register";
+import FormEdit from "../form/form-edit";
+import FormReport from "../form/form-report";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -17,6 +19,8 @@ export default function Modal(props) {
   const content = {
     login: <FormLogin />,
     register: <FormRegister />,
+    edit: <FormEdit />,
+    report: <FormReport />,
   };
   const dispatch = useDispatch();
   const handleClose = () => {

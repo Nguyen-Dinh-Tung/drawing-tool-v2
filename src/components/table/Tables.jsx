@@ -12,7 +12,14 @@ import {
   Avatar as MuiAvatar,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import { useNotification } from "../../helper/notification";
+import { useDispatch, useSelector } from "react-redux";
+import { setModal } from "../../redux/slice/modal.slice";
+import { setUserTarget } from "../../redux/slice/target.slice";
+
+import EngineeringIcon from "@mui/icons-material/Engineering";
+import { setTitle } from "../../redux/slice/title.slice";
+import { setTarget } from "../../redux/slice/table.slice";
+import { useNavigate } from "react-router";
 
 const disableKey = [
   "id",
@@ -36,28 +43,37 @@ const Tables = ({ data }) => {
   const [fixedColumns, setFixedColumns] = useState([]);
   const [scrollColumns, setScrollColumns] = useState([]);
   const [reRender, setRerender] = useState("");
-  const getDate = (data) => {
-    return new Date(data).toLocaleDateString();
-  };
-  const clickEdit = (row) => {
-    console.log(row);
-  };
+  const table = useSelector((state) => state.table.target);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   useEffect(() => {
-    const checkHeader = [];
-    Object.keys(data[0]).map((e) => {
-      if (!disableKey.includes(e)) checkHeader.push(e);
-      return;
-    });
+    if (data) {
+      const checkHeader = [];
+      Object.keys(data[0]).map((e) => {
+        if (!disableKey.includes(e)) checkHeader.push(e);
+        return;
+      });
 
-    setHeader(checkHeader);
-    setFixedColumns(checkHeader.slice(0, 2));
-    setScrollColumns(checkHeader.slice(2));
+      setHeader(checkHeader);
+      setFixedColumns(checkHeader.slice(0, 2));
+      setScrollColumns(checkHeader.slice(2));
+    }
   }, [data]);
 
-  console.log(header, "header");
-  const handleReRender = () => {};
   useEffect(() => {}, [reRender]);
-
+  const handleReRender = () => {};
+  const getDate = (value) => {
+    return new Date(value).toLocaleDateString();
+  };
+  const clickPen = (row) => {
+    dispatch(setModal({ open: true, content: "edit" }));
+    dispatch(setUserTarget(row));
+  };
+  const clickSetting = (row) => {
+    dispatch(setUserTarget(row));
+    dispatch(setTitle("Decentralization dashboard"));
+    dispatch(setTarget("permission"));
+  };
   return (
     <Box
       sx={{
@@ -70,40 +86,48 @@ const Tables = ({ data }) => {
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
-              <TableRow>
-                {header.map((columnName, index) => {
-                  if (fixedColumns.includes(columnName)) {
-                    return (
-                      <TableCell key={index} sx={{ textAlign: "left" }}>
-                        {columnName}
-                      </TableCell>
-                    );
-                  }
-                  if (scrollColumns.includes(columnName)) {
-                    return (
-                      <TableCell
-                        key={index}
-                        sx={{
-                          minWidth: "150px",
-                          textAlign: "left",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}>
-                        {columnName}
-                      </TableCell>
-                    );
-                  }
-                  return null;
-                })}
-                <TableCell>Avatar</TableCell>
-                <TableCell>Setting</TableCell>
+              <TableRow
+                sx={{
+                  backgroundColor: "#34de95",
+                }}>
+                <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                  Full name
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                  Email
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                  Email
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                  Email
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                  Email
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                  Avatar
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                  Setting
+                </TableCell>
+                {table && table === "user" ? (
+                  <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                    Role
+                  </TableCell>
+                ) : (
+                  ""
+                )}
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.length &&
+              {data &&
+                data.length &&
                 data.map((row, rowIndex) => (
-                  <TableRow key={rowIndex}>
+                  <TableRow
+                    key={rowIndex}
+                    sx={{ "&:hover": { backgroundColor: "#f5f5f5" } }} // Thay đổi màu nền khi hover vào hàng
+                  >
                     {header.map((columnName, cellIndex) => {
                       if (fixedColumns.includes(columnName)) {
                         return (
@@ -147,10 +171,19 @@ const Tables = ({ data }) => {
                       )}
                     </TableCell>
                     <TableCell>
-                      <IconButton onClick={() => clickEdit(row)}>
-                        <EditIcon />
+                      <IconButton onClick={() => clickPen(row)}>
+                        <EditIcon sx={{ color: "#34de95" }} />
                       </IconButton>
                     </TableCell>
+                    {table && table === "user" ? (
+                      <TableCell>
+                        <IconButton onClick={() => clickSetting(row)}>
+                          <EngineeringIcon sx={{ color: "#34de95" }} />
+                        </IconButton>
+                      </TableCell>
+                    ) : (
+                      ""
+                    )}
                   </TableRow>
                 ))}
             </TableBody>

@@ -8,6 +8,7 @@ import Profile from "./pages/profile/Profile";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { setLogin, setLogout } from "./redux/slice/auth.slice";
+import Test from "./pages/test/Test";
 
 function App() {
   const token = window.localStorage.getItem("accessToken");
@@ -25,6 +26,7 @@ function App() {
           {token ? <Route path="/profile" element={<Profile />} /> : ""}
         </Route>
         <Route path="/admin" element={<Dashboard />}></Route>
+        <Route path="/test" element={<Test />}></Route>
       </Routes>
     </BrowserRouter>
   );

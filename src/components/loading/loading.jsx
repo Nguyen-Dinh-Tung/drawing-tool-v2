@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 const Loading = () => {
   const classes = useStyles();
   const loading = useSelector((state) => state.loading);
-
+  console.log(loading);
   if (!loading) return null;
 
   return (
