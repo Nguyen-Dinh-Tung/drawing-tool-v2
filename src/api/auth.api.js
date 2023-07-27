@@ -20,7 +20,8 @@ export const getMeApi = async (data) => {
   // {userId :
   return await axios.post(
     process.env.REACT_APP_BACKEND_HOST +
-      "/api/v1.0/Auth/userProfile/user-profile-cms?userId=" +
-      userId
+      "/api/v1.0/Auth/userProfile/user-profile-ldp?userId=" +
+      userId,
+    data
   );
 };

@@ -13,6 +13,10 @@ import SendIcon from "@mui/icons-material/Send";
 import { makeStyles } from "@mui/styles";
 import { useNotification } from "../../helper/notification";
 import { artComments, sendComment } from "../../api/art.api";
+import { setModal } from "../../redux/slice/modal.slice";
+import { setUserTarget } from "../../redux/slice/target.slice";
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
+import { useDispatch, useSelector } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   commentSection: {},
   comment: {
@@ -34,16 +38,28 @@ const useStyles = makeStyles((theme) => ({
   commentUserName: {
     marginRight: "20px",
   },
+  boxHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    margin: "20px 0",
+  },
 }));
 
-const CommentSection = ({ art }) => {
+const CommentSection = ({ art, handleCloseDialog }) => {
   const [comment, setComment] = useState("");
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [selectedCommentId, setSelectedCommentId] = useState(null);
+
   const classes = useStyles();
+  const isLogin = useSelector((state) => state.auth.isLogin);
+
   const [commentsData, setCommentsData] = useState([]);
   const [createNotification] = useNotification();
   const [reRender, setReRender] = useState("");
+
+  const dispatch = useDispatch();
+
   const handleMenuOpen = (event, commentId) => {
     setMenuAnchorEl(event.currentTarget);
     setSelectedCommentId(commentId);
@@ -63,7 +79,7 @@ const CommentSection = ({ art }) => {
         },
       ],
       pageIndex: 0,
-      pageSize: -1,
+      pageSize: 10,
       showTotal: true,
       listFilter: [],
     };
@@ -111,54 +127,30 @@ const CommentSection = ({ art }) => {
     setComment("");
   };
 
-  // const renderChildComments = (childComments) => {
-  //   if (!childComments || childComments.length === 0) {
-  //     return null;
-  //   }
-
-  //   return childComments.map((childComment) => (
-  //     <div key={childComment.id} className={classes.comment}>
-  //       {/* Render child comment content */}
-  //       <div className={classes.commentSubContent}>
-  //         <Avatar
-  //           src={childComment && childComment.userAvatar}
-  //           className={classes.commentAvatar}
-  //         />
-  //         <div className={classes.commentContent}>
-  //           <Typography variant="body1" className={classes.commentUserName}>
-  //             {childComment && childComment.userName}
-  //           </Typography>
-  //           <Typography variant="body2">{childComment.text}</Typography>
-  //         </div>
-  //       </div>
-  //       {/* Render child comment menu */}
-  //       <IconButton onClick={(event) => handleMenuOpen(event, childComment.id)}>
-  //         <MoreVertIcon />
-  //       </IconButton>
-  //       <Menu
-  //         sx={{ float: "right" }}
-  //         anchorEl={menuAnchorEl}
-  //         open={selectedCommentId === childComment.id}
-  //         onClose={handleMenuClose}
-  //         onClick={handleMenuClose}>
-  //         <MenuItem>Report</MenuItem>
-  //         {/* Add more menu items if needed */}
-  //       </Menu>
-  //       {/* Render child comments recursively */}
-  //       {renderChildComments(childComment.children)}
-  //     </div>
-  //   ));
-  // };
-
+  const showReport = (art) => {
+    dispatch(setModal({ open: true, content: "report" }));
+    dispatch(setUserTarget(art));
+    handleCloseDialog();
+  };
   return (
     <div className={classes.commentSection}>
-      <Typography sx={{ marginTop: 4, marginBottom: 2 }} variant="h6">
-        Hello bà con nhé
-      </Typography>
+      <Box className={classes.boxHeader}>
+        <Typography variant="h6">Hello bà con nhé</Typography>
+        {isLogin ? (
+          <IconButton
+            color="error"
+            onClick={() => {
+              showReport(art);
+            }}>
+            <ReportGmailerrorredIcon />
+          </IconButton>
+        ) : (
+          ""
+        )}
+      </Box>
       <div>
         {commentsData.map((commentData) => (
           <div key={commentData.id} className={classes.comment}>
-            {/* Render parent comment content */}
             <div className={classes.commentSubContent}>
               <Avatar
                 src={commentData && commentData.userAvatar}
@@ -171,26 +163,23 @@ const CommentSection = ({ art }) => {
                 <Typography variant="body2">{commentData.text}</Typography>
               </div>
             </div>
-            {/* Render parent comment menu */}
             <IconButton
               onClick={(event) => handleMenuOpen(event, commentData.id)}>
               <MoreVertIcon />
             </IconButton>
-            <Menu
+            {/* <Menu
               sx={{ float: "right" }}
               anchorEl={menuAnchorEl}
               open={selectedCommentId === commentData.id}
               onClose={handleMenuClose}
               onClick={handleMenuClose}>
-              <MenuItem>Report</MenuItem>
-              {/* Add more menu items if needed */}
-            </Menu>
-            {/* Render child comments */}
-            {/* {renderChildComments(
-              commentsData.map((e) =>
-                e.commentParrentId ? e.commentParrentId : ""
-              )
-            )} */}
+              <MenuItem
+                onClick={() => {
+                  showReport(commentData);
+                }}>
+                Reply
+              </MenuItem>
+            </Menu> */}
           </div>
         ))}
       </div>

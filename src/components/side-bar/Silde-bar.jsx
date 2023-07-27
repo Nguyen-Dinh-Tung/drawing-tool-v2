@@ -48,7 +48,6 @@ const Sidebar = () => {
     dispatch(setTitle("Rate dashboard"));
     dispatch(setTarget("rate"));
   };
-  console.log(classes);
 
   const sidebarContent = (
     <Box sx={{ p: 2, width: "240px" }}>

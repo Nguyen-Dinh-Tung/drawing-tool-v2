@@ -14,6 +14,7 @@ function Navbar(props) {
     dispatch(setModal({ content: content, open: true }));
   };
   const logout = () => {
+    window.localStorage.removeItem("accessToken");
     dispatch(setLogout());
   };
   return (

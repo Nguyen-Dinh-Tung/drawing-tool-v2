@@ -139,17 +139,28 @@ const Profile = () => {
   const handleMouseEnter = () => {
     setIsHovered(true);
   };
-
   const handleMouseLeave = () => {
     setIsHovered(false);
   };
   const gender = {
     0: "Female",
     1: "Male",
-    3: "Other",
+    2: "Other",
   };
   useEffect(() => {
-    getMeApi()
+    const data = {
+      filter: {
+        searchField: "",
+        code: "",
+        name: "",
+      },
+      orderBy: [],
+      pageIndex: 0,
+      pageSize: 20,
+      showTotal: true,
+      listFilter: [],
+    };
+    getMeApi(data)
       .then((res) => {
         if (res.data.isError) {
           createNotification(true, res.data.message, "error");
@@ -162,94 +173,95 @@ const Profile = () => {
         }
       });
   }, []);
-  return (
-    <div className={classes.container}>
-      <div
-        className={classes.contentTop}
-        // style={{
-        //   backgroundColor:
-        //     profile && profile.gender === 0
-        //       ? "rgb(233, 30, 99)"
-        //       : profile.gender === 1
-        //       ? "#34de95"
-        //       : "",
-        // }}
-      ></div>
-      <div className={classes.contentBottom}></div>
-      <Box className={classes.rectangle}>
-        <div className={classes.info}>
-          <div className={classes.controlInfor}>
-            <div className={classes.inforTop}>
-              <div className={classes.inforTopRight}>
-                <p className={classes.inforContact}>
-                  {profile && gender[profile.gender]}
-                </p>
-                <p className={classes.inforContact}>Manager</p>
-                <p className={classes.inforContact}>
-                  {profile && profile.code ? profile.code : "None"}
-                </p>
-              </div>
-              <div className={classes.inforTopLeft}>
-                <p className={classes.inforContact}>
-                  {profile && profile.email}
-                </p>
-                <p className={classes.inforContact}>
-                  {profile && profile.phoneNumber}
-                </p>
-              </div>
-            </div>
-            <div className="button-group">
-              <FollowButton changeBgColor={changeBgColor} />
-              <MessageButton changeBgColor={changeBgColor} />
-            </div>
-          </div>
-          <div className={classes.inforBottom}>
-            <h3
-              className={classes.inforBottomName}
-              style={{
-                fontSize: "20px",
-              }}>
-              {profile && profile.name}
-            </h3>
-            <h3 className={classes.inforBottomName}>
-              {profile && new Date(profile.birthDay).toDateString()}
-            </h3>
-            <hr className={classes.hr} />
-            <p className={classes.inforBottomName}>
-              An artist of considerable range, Ryan — the name taken by
-              Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs
-              and records all of his own music, giving it a warm, intimate feel
-              with a solid groove structure. An artist of considerable range.
-            </p>
-          </div>
-        </div>
+  if (profile)
+    return (
+      <div className={classes.container}>
         <div
-          className={`avatar-container ${isHovered ? "hovered" : ""}`}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          className={classes.contentTop}
           style={{
-            position: "absolute",
-            top: 0,
-            left: "50%",
-            transform: "translate(-50%, -20%)",
-          }}>
-          <Avatar
-            sx={{
-              width: "260px",
-              height: "260px",
-              cursor: "pointer",
-            }}
-            alt="Remy Sharp"
-            src={
-              profile && profile.avatar
-                ? profile.avatar
-                : "./profile-avatar.jpg"
-            }
-          />
-        </div>
-      </Box>
-    </div>
-  );
+            backgroundColor:
+              profile && profile.gender !== undefined && profile.gender === 0
+                ? "#fc466b"
+                : profile.gender === 1
+                ? "#34de95"
+                : "",
+          }}></div>
+        <div className={classes.contentBottom}></div>
+        <Box className={classes.rectangle}>
+          <div className={classes.info}>
+            <div className={classes.controlInfor}>
+              <div className={classes.inforTop}>
+                <div className={classes.inforTopRight}>
+                  <p className={classes.inforContact}>
+                    {profile && gender[profile.gender]}
+                  </p>
+                  <p className={classes.inforContact}>Manager</p>
+                  <p className={classes.inforContact}>
+                    {profile && profile.code ? profile.code : "None"}
+                  </p>
+                </div>
+                <div className={classes.inforTopLeft}>
+                  <p className={classes.inforContact}>
+                    {profile && profile.email}
+                  </p>
+                  <p className={classes.inforContact}>
+                    {profile && profile.phoneNumber}
+                  </p>
+                </div>
+              </div>
+              <div className="button-group">
+                <FollowButton changeBgColor={changeBgColor} />
+                <MessageButton changeBgColor={changeBgColor} />
+              </div>
+            </div>
+            <div className={classes.inforBottom}>
+              <h3
+                className={classes.inforBottomName}
+                style={{
+                  fontSize: "20px",
+                }}>
+                {profile && profile.name}
+              </h3>
+              <h3 className={classes.inforBottomName}>
+                {profile && new Date(profile.birthDay).toDateString()}
+              </h3>
+              <hr className={classes.hr} />
+              <p className={classes.inforBottomName}>
+                An artist of considerable range, Ryan — the name taken by
+                Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs
+                and records all of his own music, giving it a warm, intimate
+                feel with a solid groove structure. An artist of considerable
+                range.
+              </p>
+            </div>
+          </div>
+          <div
+            className={`avatar-container ${isHovered ? "hovered" : ""}`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: "50%",
+              transform: "translate(-50%, -20%)",
+            }}>
+            <Avatar
+              sx={{
+                width: "260px",
+                height: "260px",
+                cursor: "pointer",
+              }}
+              alt="Remy Sharp"
+              src={
+                profile && profile.avatarUrl
+                  ? profile.avatarUrl
+                  : "./profile-avatar.jpg"
+              }
+            />
+          </div>
+        </Box>
+      </div>
+    );
 };
 
 export default Profile;

@@ -29,8 +29,7 @@ const descriptions = {
 function SelectSison(props) {
   const [select, setSelect] = useState(IllegalType[0]);
   const handleChange = (e) => {
-    setSelect(e.target.value);
-    props.handleChangeReason(e.target.value);
+    props.handleChangeReason(e);
   };
 
   return (
@@ -40,7 +39,8 @@ function SelectSison(props) {
         labelId="demo-select-small-label"
         id="demo-select-small"
         onChange={handleChange}
-        value={select}
+        name="illegalType"
+        value={props.reason && props.reason.illegalType}
         label="Illegal Type">
         {Object.keys(IllegalType).map((key) => {
           if (IllegalType[key] !== 0)
