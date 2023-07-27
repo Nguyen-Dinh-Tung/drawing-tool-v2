@@ -68,7 +68,11 @@ export default function FormEdit(props) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData();
-    if (!user.password) user.password = targetUser.password;
+
+    if (!user.password) {
+      delete user.password;
+      data.append("password", targetUser.password);
+    }
     Object.keys(user).map((e) => {
       data.append(e, user[e]);
     });
@@ -79,10 +83,10 @@ export default function FormEdit(props) {
           return;
         }
         createNotification(true, res.data.message, "success");
+        return;
       })
       .catch((e) => {
         if (e) {
-          console.log(e);
           createNotification(true, e.response.data.message, "error");
           return;
         }
@@ -91,11 +95,9 @@ export default function FormEdit(props) {
     if (formRef.current) formRef.current.reset();
   };
   React.useEffect(() => {
-    console.log(targetUser, "target");
     setUser({
       address: targetUser.address,
       birthDay: targetUser.birthDay,
-      code: targetUser.code,
       email: targetUser.email,
       gender: targetUser.gender,
       name: targetUser.name,

@@ -201,7 +201,6 @@ const Art = () => {
           <DialogContent>
             <div className={classes.dialogContent}>
               <div className={classes.imageSection}>
-                {/* Replace 'currentImage' with the URL of the clicked image */}
                 <img
                   src={currentImage && currentImage.artUrl}
                   alt="Enlarged Image"
@@ -209,7 +208,10 @@ const Art = () => {
                 />
               </div>
               {currentImage ? (
-                <CommentSection art={currentImage && currentImage} />
+                <CommentSection
+                  art={currentImage && currentImage}
+                  handleCloseDialog={handleCloseDialog}
+                />
               ) : (
                 ""
               )}

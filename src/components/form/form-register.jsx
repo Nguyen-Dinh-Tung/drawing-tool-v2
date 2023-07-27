@@ -19,6 +19,7 @@ import { useNotification } from "../../helper/notification";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../../redux/slice/loading.slice";
+import { hiddenModal } from "../../redux/slice/modal.slice";
 
 const defaultTheme = createTheme();
 
@@ -62,7 +63,8 @@ export default function FormRegister(props) {
           createNotification(true, res.data.message, "error");
           return;
         }
-        createNotification(true, res.data.message, "true");
+        dispatch(hiddenModal());
+        createNotification(true, res.data.message, "success");
       })
       .catch((e) => {
         if (e) {

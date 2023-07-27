@@ -20,6 +20,8 @@ import EngineeringIcon from "@mui/icons-material/Engineering";
 import { setTitle } from "../../redux/slice/title.slice";
 import { setTarget } from "../../redux/slice/table.slice";
 import { useNavigate } from "react-router";
+import { findAll } from "../../api/user.api";
+import { useNotification } from "../../helper/notification";
 
 const disableKey = [
   "id",
@@ -39,28 +41,41 @@ const status = {
   1: "Active",
 };
 const Tables = ({ data }) => {
-  const [header, setHeader] = useState([]);
-  const [fixedColumns, setFixedColumns] = useState([]);
-  const [scrollColumns, setScrollColumns] = useState([]);
   const [reRender, setRerender] = useState("");
+  const [users, setUsers] = useState([]);
   const table = useSelector((state) => state.table.target);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const [createNotification] = useNotification();
+
   useEffect(() => {
-    if (data) {
-      const checkHeader = [];
-      Object.keys(data[0]).map((e) => {
-        if (!disableKey.includes(e)) checkHeader.push(e);
-        return;
+    const filter = {
+      filter: {
+        searchField: "",
+        code: "",
+        name: "",
+      },
+      orderBy: [],
+      pageIndex: 0,
+      pageSize: 10,
+      showTotal: true,
+      listFilter: [],
+    };
+    findAll(filter)
+      .then((res) => {
+        if (res.data.isError) {
+          createNotification(true, res.data.message, "error");
+          return;
+        }
+        setUsers(res.data.result.data);
+      })
+      .catch((e) => {
+        if (e) {
+          if (e.response)
+            createNotification(true, e.response.data.message, "error");
+          return;
+        }
       });
-
-      setHeader(checkHeader);
-      setFixedColumns(checkHeader.slice(0, 2));
-      setScrollColumns(checkHeader.slice(2));
-    }
-  }, [data]);
-
-  useEffect(() => {}, [reRender]);
+  }, [reRender]);
   const handleReRender = () => {};
   const getDate = (value) => {
     return new Date(value).toLocaleDateString();
@@ -74,6 +89,7 @@ const Tables = ({ data }) => {
     dispatch(setTitle("Decentralization dashboard"));
     dispatch(setTarget("permission"));
   };
+  useEffect(() => {}, []);
   return (
     <Box
       sx={{
@@ -81,7 +97,6 @@ const Tables = ({ data }) => {
         marginLeft: "240px",
         overflowX: "auto",
       }}>
-      {/* Bọc bảng trong một phần tử div để tạo thanh cuộn ngang */}
       <div style={{ overflowX: "auto" }}>
         <TableContainer component={Paper}>
           <Table>
@@ -94,16 +109,22 @@ const Tables = ({ data }) => {
                   Full name
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                  Email
+                  Code
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                  Birth Day
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                  phoneNumber
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "600" }}>
                   Email
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                  Email
+                  Gender
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                  Email
+                  Nick name
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "600" }}>
                   Avatar
@@ -121,49 +142,22 @@ const Tables = ({ data }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data &&
-                data.length &&
-                data.map((row, rowIndex) => (
+              {users.length &&
+                users.map((user, rowIndex) => (
                   <TableRow
                     key={rowIndex}
-                    sx={{ "&:hover": { backgroundColor: "#f5f5f5" } }} // Thay đổi màu nền khi hover vào hàng
-                  >
-                    {header.map((columnName, cellIndex) => {
-                      if (fixedColumns.includes(columnName)) {
-                        return (
-                          <TableCell key={cellIndex} sx={{ textAlign: "left" }}>
-                            {row[columnName]}
-                          </TableCell>
-                        );
-                      }
-                      if (scrollColumns.includes(columnName)) {
-                        return (
-                          <TableCell
-                            key={cellIndex}
-                            sx={{
-                              minWidth: "150px",
-                              textAlign: "left",
-                              wordBreak: "break-word",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}>
-                            {columnName === "birthDay"
-                              ? getDate(row[columnName])
-                              : columnName === "gender"
-                              ? gender[row[columnName]]
-                              : columnName === "status"
-                              ? status[row[columnName]]
-                              : row[columnName]}
-                          </TableCell>
-                        );
-                      }
-                      return null;
-                    })}
+                    sx={{ "&:hover": { backgroundColor: "#f5f5f5" } }}>
+                    <TableCell>{users && user.name}</TableCell>
+                    <TableCell>{users && user.code}</TableCell>
+                    <TableCell>{users && getDate(user.birthDay)}</TableCell>
+                    <TableCell>{users && user.phoneNumber}</TableCell>
+                    <TableCell>{users && user.email}</TableCell>
+                    <TableCell>{users && gender[user.gender]}</TableCell>
+                    <TableCell>{users && user.nickname}</TableCell>
                     <TableCell>
-                      {row.avatarUrl ? (
+                      {user.avatarUrl ? (
                         <MuiAvatar
-                          src={row.avatarUrl}
+                          src={user.avatarUrl}
                           sx={{ width: 40, height: 40 }}
                         />
                       ) : (
@@ -171,13 +165,13 @@ const Tables = ({ data }) => {
                       )}
                     </TableCell>
                     <TableCell>
-                      <IconButton onClick={() => clickPen(row)}>
+                      <IconButton onClick={() => clickPen(user)}>
                         <EditIcon sx={{ color: "#34de95" }} />
                       </IconButton>
                     </TableCell>
                     {table && table === "user" ? (
                       <TableCell>
-                        <IconButton onClick={() => clickSetting(row)}>
+                        <IconButton onClick={() => clickSetting(user)}>
                           <EngineeringIcon sx={{ color: "#34de95" }} />
                         </IconButton>
                       </TableCell>

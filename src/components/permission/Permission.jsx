@@ -34,9 +34,7 @@ const TableWithPermissions = ({ users }) => {
 
   const handleCheck = async (e, row, column) => {
     const checkedStatus = e.target.checked;
-    console.log(row, "row");
-    console.log(column, "column");
-    console.log(checkedStatus, "checkedStatus");
+
     const index = mixData.indexOf(row);
     if (checkedStatus !== undefined) {
       row[column] = checkedStatus;
@@ -62,7 +60,6 @@ const TableWithPermissions = ({ users }) => {
   useEffect(() => {
     getPermission(target.role)
       .then((res) => {
-        console.log(res, "res");
         if (res.data.isError) {
           createNotification(true, res.data.message, "error");
           return;
@@ -128,6 +125,12 @@ const TableWithPermissions = ({ users }) => {
                         color="primary"
                         name={row.isView}
                         checked={row.isView}
+                        sx={{
+                          color: "#34de95",
+                          "&.Mui-checked": {
+                            color: "#34de95",
+                          },
+                        }}
                         onClick={(e) => {
                           handleCheck(e, row, "isView");
                         }}
@@ -138,6 +141,12 @@ const TableWithPermissions = ({ users }) => {
                         color="primary"
                         name={row.isDelete}
                         checked={row.isDelete}
+                        sx={{
+                          color: "#34de95",
+                          "&.Mui-checked": {
+                            color: "#34de95",
+                          },
+                        }}
                         onClick={(e) => {
                           handleCheck(e, row, "isDelete");
                         }}
@@ -148,6 +157,12 @@ const TableWithPermissions = ({ users }) => {
                         color="primary"
                         name={row.isUpdate}
                         checked={row.isUpdate}
+                        sx={{
+                          color: "#34de95",
+                          "&.Mui-checked": {
+                            color: "#34de95",
+                          },
+                        }}
                         onClick={(e) => {
                           handleCheck(e, row, "isUpdate");
                         }}

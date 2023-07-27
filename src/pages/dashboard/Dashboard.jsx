@@ -44,35 +44,7 @@ const Dashboard = () => {
     setCurrentPage(newPage);
   };
 
-  useEffect(() => {
-    const filter = {
-      filter: {
-        searchField: "",
-        code: "",
-        name: "",
-      },
-      orderBy: [],
-      pageIndex: 0,
-      pageSize: 10,
-      showTotal: true,
-      listFilter: [],
-    };
-    findAll(filter)
-      .then((res) => {
-        if (res.data.isError) {
-          createNotification(true, res.data.message, "error");
-          return;
-        }
-        setData(res.data.result.data);
-      })
-      .catch((e) => {
-        if (e) {
-          if (e.response)
-            createNotification(true, e.response.data.message, "error");
-          return;
-        }
-      });
-  }, [table === "user" ? table : ""]);
+  useEffect(() => {}, [table === "user" ? table : ""]);
   return (
     <Box
       sx={{
@@ -128,30 +100,6 @@ const Dashboard = () => {
               ),
             }}
           />
-          <FormControl
-            sx={{
-              m: 1,
-              minWidth: "250px",
-              minHeight: "50px",
-              backgroundColor: "#fff",
-              borderRadius: "6px",
-            }}>
-            <InputLabel>Order by</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              label="Order by"
-              sx={{
-                "& .MuiSelect-icon": {
-                  color: "#34de95",
-                },
-                "& .MuiSelect-iconOpen": {
-                  transform: "rotate(180deg)",
-                },
-              }}>
-              <MenuItem>test form</MenuItem>
-            </Select>
-          </FormControl>
         </Box>
         {table == "permission" ? (
           <TableWithPermissions />

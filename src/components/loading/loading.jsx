@@ -1,4 +1,3 @@
-// LoadingOverlay.js
 import React from "react";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@mui/styles";
@@ -22,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
 const Loading = () => {
   const classes = useStyles();
   const loading = useSelector((state) => state.loading);
-  console.log(loading);
   if (!loading) return null;
 
   return (
