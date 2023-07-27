@@ -14,9 +14,7 @@ import { makeStyles } from "@mui/styles";
 import { useNotification } from "../../helper/notification";
 import { artComments, sendComment } from "../../api/art.api";
 const useStyles = makeStyles((theme) => ({
-  commentSection: {
-    // Các thuộc tính CSS tùy chỉnh cho comment section
-  },
+  commentSection: {},
   comment: {
     display: "flex",
     margin: "20px",
@@ -24,12 +22,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   commentAuthor: {},
-  commentContent: {
-    // Các thuộc tính CSS tùy chỉnh cho comment content
-  },
-  commentTextField: {
-    // Các thuộc tính CSS tùy chỉnh cho comment text field
-  },
+  commentContent: {},
+  commentTextField: {},
   commentSubContent: {
     display: "flex",
     alignItems: "center",

@@ -17,10 +17,20 @@ import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import { useDispatch } from "react-redux";
 import { setTitle } from "../../redux/slice/title.slice";
 import NotesIcon from "@mui/icons-material/Notes";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import EngineeringIcon from "@mui/icons-material/Engineering";
 import { setTarget } from "../../redux/slice/table.slice";
+import { makeStyles } from "@mui/styles";
+import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+const useStyles = makeStyles((theme) => ({
+  listItem: {
+    border: "solid #ccc",
+  },
+  itemText: {
+    color: "white",
+  },
+}));
 const Sidebar = () => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const clickUser = () => {
     dispatch(setTitle("Users dashboard"));
@@ -38,48 +48,63 @@ const Sidebar = () => {
     dispatch(setTitle("Rate dashboard"));
     dispatch(setTarget("rate"));
   };
-  const clickDecentralization = () => {
-    dispatch(setTitle("Decentralization dashboard"));
-    dispatch(setTarget("permission"));
-  };
+  console.log(classes);
+
   const sidebarContent = (
     <Box sx={{ p: 2, width: "240px" }}>
-      <Typography variant="h6" sx={{ marginBottom: "16px" }}>
-        Final Project
-      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "center", mb: "18px" }}>
+        <img
+          src="./inkstagram-02.png"
+          alt="random"
+          style={{ maxWidth: "60px" }}
+        />
+      </Box>
       <List>
-        <ListItem button onClick={clickUser}>
+        <ListItem
+          button
+          onClick={clickUser}
+          sx={{
+            marginBottom: "10px",
+          }}>
           <ListItemIcon>
-            <PersonIcon />
+            <PersonIcon sx={{ color: "#34de95" }} />
           </ListItemIcon>
-          <ListItemText primary="User" />
+          <ListItemText primary="Users" />
         </ListItem>
-        <ListItem button onClick={clickReport}>
+        <ListItem
+          button
+          onClick={clickReport}
+          sx={{
+            marginBottom: "10px",
+          }}>
           <ListItemIcon>
-            <ReportGmailerrorredIcon />
+            <ReportGmailerrorredIcon sx={{ color: "#34de95" }} />
           </ListItemIcon>
           <ListItemText primary="Report" />
         </ListItem>
 
-        <ListItem button onClick={clickComments}>
+        <ListItem
+          button
+          onClick={clickComments}
+          sx={{
+            marginBottom: "10px",
+          }}>
           <ListItemIcon>
-            <NotesIcon />
+            <NotesIcon sx={{ color: "#34de95" }} />
           </ListItemIcon>
           <ListItemText primary="Comments" />
         </ListItem>
 
-        <ListItem button>
+        <ListItem
+          button
+          sx={{
+            marginBottom: "10px",
+            display: "flex",
+          }}>
           <ListItemIcon>
-            <FavoriteBorderIcon />
+            <ThumbUpOffAltIcon sx={{ color: "#34de95" }} />
           </ListItemIcon>
           <ListItemText primary="Rate" onClick={clickRate} />
-        </ListItem>
-
-        <ListItem button onClick={clickDecentralization}>
-          <ListItemIcon>
-            <EngineeringIcon />
-          </ListItemIcon>
-          <ListItemText primary="Decentralization" />
         </ListItem>
       </List>
     </Box>
@@ -89,8 +114,33 @@ const Sidebar = () => {
     <Drawer
       variant="permanent"
       anchor="left"
-      sx={{ position: "fixed", zIndex: 1 }}>
+      sx={{
+        position: "fixed",
+        zIndex: 1,
+      }}>
       {sidebarContent}
+      <Box
+        sx={{
+          p: 2,
+          width: "240px",
+          position: "fixed",
+          zIndex: 1,
+          bottom: "10px",
+        }}>
+        <List>
+          <ListItem
+            button
+            sx={{
+              marginBottom: "10px",
+              display: "flex",
+            }}>
+            <ListItemIcon>
+              <ExitToAppIcon sx={{ color: "#34de95" }} />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItem>
+        </List>
+      </Box>
     </Drawer>
   );
 };

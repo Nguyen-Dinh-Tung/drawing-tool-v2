@@ -166,9 +166,15 @@ const Profile = () => {
     <div className={classes.container}>
       <div
         className={classes.contentTop}
-        style={{
-          backgroundColor: bgColor,
-        }}></div>
+        // style={{
+        //   backgroundColor:
+        //     profile && profile.gender === 0
+        //       ? "rgb(233, 30, 99)"
+        //       : profile.gender === 1
+        //       ? "#34de95"
+        //       : "",
+        // }}
+      ></div>
       <div className={classes.contentBottom}></div>
       <Box className={classes.rectangle}>
         <div className={classes.info}>
