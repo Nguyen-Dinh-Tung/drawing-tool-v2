@@ -21,6 +21,7 @@ import { findAll } from "../../api/user.api";
 import Modal from "../../components/modal/Modal";
 import Notification from "../../components/notification/Notification";
 import Loading from "../../components/loading/loading";
+import ReportTable from "../../components/table/ReportTable";
 
 const defaultTable = [
   {
@@ -37,13 +38,26 @@ const defaultTable = [
 const Dashboard = () => {
   const title = useSelector((state) => state.title.title);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPage, setTotalPage] = useState({
+    user: 1,
+    report: 1,
+    rate: 1,
+    comment: 1,
+  });
   const table = useSelector((state) => state.table.target);
-  const [data, setData] = useState(defaultTable);
   const [createNotification] = useNotification();
+  const [keyword, setKeyword] = useState({
+    user: "",
+    report: "",
+    rate: "",
+    comment: "",
+  });
   const handleChangePage = (event, newPage) => {
     setCurrentPage(newPage);
   };
-
+  const handleChangeKeyword = (e) => {
+    setKeyword({ ...keyword, [table]: keyword });
+  };
   useEffect(() => {}, [table === "user" ? table : ""]);
   return (
     <Box
@@ -91,6 +105,7 @@ const Dashboard = () => {
               overflow: "hidden",
             }}
             placeholder="Search"
+            onChange={handleChangeKeyword}
             variant="outlined"
             InputProps={{
               endAdornment: (
@@ -101,12 +116,43 @@ const Dashboard = () => {
             }}
           />
         </Box>
-        {table == "permission" ? (
-          <TableWithPermissions />
-        ) : (
-          <Tables data={data && data} />
-        )}
+        <Box>
+          {table == "permission" ? (
+            <TableWithPermissions
+              currentPage={currentPage}
+              handleChangePage={handleChangePage}
+              setTotalPage={setTotalPage}
+              totalPage={totalPage}
+              keyword={keyword}
+            />
+          ) : (
+            ""
+          )}
+          {table == "report" ? (
+            <ReportTable
+              currentPage={currentPage}
+              handleChangePage={handleChangePage}
+              setTotalPage={setTotalPage}
+              totalPage={totalPage}
+              keyword={keyword}
+            />
+          ) : (
+            ""
+          )}
+          {table == "user" ? (
+            <Tables
+              currentPage={currentPage}
+              handleChangePage={handleChangePage}
+              setTotalPage={setTotalPage}
+              totalPage={totalPage}
+              keyword={keyword}
+            />
+          ) : (
+            ""
+          )}
+        </Box>
       </Box>
+
       {table === "permission" ? (
         ""
       ) : (
@@ -117,7 +163,7 @@ const Dashboard = () => {
             left: "50%",
           }}>
           <Pagination
-            count={5}
+            count={totalPage[table]}
             page={currentPage}
             onChange={handleChangePage}
             color="primary"

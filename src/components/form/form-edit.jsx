@@ -105,6 +105,7 @@ export default function FormEdit(props) {
       phoneNumber: targetUser.phoneNumber,
       avatar: "",
       id: targetUser.id,
+      password: targetUser.password,
     });
     setFileRender(targetUser.avatar);
   }, [targetUser]);

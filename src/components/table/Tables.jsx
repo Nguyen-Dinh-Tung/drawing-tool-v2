@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -40,23 +40,22 @@ const status = {
   0: "Stop",
   1: "Active",
 };
-const Tables = ({ data }) => {
+const Tables = ({ currentPage, setTotalPage, totalPage, keyword }) => {
   const [reRender, setRerender] = useState("");
   const [users, setUsers] = useState([]);
   const table = useSelector((state) => state.table.target);
   const dispatch = useDispatch();
   const [createNotification] = useNotification();
-
   useEffect(() => {
     const filter = {
       filter: {
-        searchField: "",
+        searchField: keyword[table],
         code: "",
         name: "",
       },
       orderBy: [],
-      pageIndex: 0,
-      pageSize: 10,
+      pageIndex: currentPage && table && currentPage - 1,
+      pageSize: 6,
       showTotal: true,
       listFilter: [],
     };
@@ -67,6 +66,11 @@ const Tables = ({ data }) => {
           return;
         }
         setUsers(res.data.result.data);
+
+        setTotalPage({
+          ...totalPage,
+          [table]: Math.ceil(res.data.result.count / filter.pageSize),
+        });
       })
       .catch((e) => {
         if (e) {
@@ -75,7 +79,7 @@ const Tables = ({ data }) => {
           return;
         }
       });
-  }, [reRender]);
+  }, [reRender, currentPage]);
   const handleReRender = () => {};
   const getDate = (value) => {
     return new Date(value).toLocaleDateString();
@@ -146,7 +150,10 @@ const Tables = ({ data }) => {
                 users.map((user, rowIndex) => (
                   <TableRow
                     key={rowIndex}
-                    sx={{ "&:hover": { backgroundColor: "#f5f5f5" } }}>
+                    sx={{
+                      backgroundColor: "white",
+                      "&:hover": { backgroundColor: "#f5f5f5" },
+                    }}>
                     <TableCell>{users && user.name}</TableCell>
                     <TableCell>{users && user.code}</TableCell>
                     <TableCell>{users && getDate(user.birthDay)}</TableCell>
