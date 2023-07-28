@@ -21,6 +21,7 @@ import { setTarget } from "../../redux/slice/table.slice";
 import { makeStyles } from "@mui/styles";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import { useNavigate } from "react-router";
 const useStyles = makeStyles((theme) => ({
   listItem: {
     border: "solid #ccc",
@@ -30,30 +31,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 const Sidebar = () => {
-  const classes = useStyles();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const clickUser = () => {
     dispatch(setTitle("Users dashboard"));
     dispatch(setTarget("user"));
+    navigate("/admin/user");
   };
   const clickReport = () => {
     dispatch(setTitle("Report dashboard"));
     dispatch(setTarget("report"));
+    navigate("/admin/report");
   };
   const clickComments = () => {
     dispatch(setTitle("Comments dashboard"));
     dispatch(setTarget("comments"));
+    navigate("/admin/comments");
   };
   const clickRate = () => {
     dispatch(setTitle("Rate dashboard"));
     dispatch(setTarget("rate"));
+    navigate("/admin/rate");
   };
-
+  const logout = () => {
+    window.localStorage.removeItem("adminToken");
+    navigate("/admin/login");
+  };
   const sidebarContent = (
-    <Box sx={{ p: 2, width: "240px" }}>
+    <Box sx={{ p: 2, width: "280px" }}>
       <Box sx={{ display: "flex", justifyContent: "center", mb: "18px" }}>
         <img
-          src="./inkstagram-02.png"
+          src="/inkstagram-02.png"
           alt="random"
           style={{ maxWidth: "60px" }}
         />
@@ -110,37 +118,31 @@ const Sidebar = () => {
   );
 
   return (
-    <Drawer
-      variant="permanent"
-      anchor="left"
+    <Box
       sx={{
-        position: "fixed",
         zIndex: 1,
+        backgroundColor: "white",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        top: 0,
+        left: 0,
       }}>
       {sidebarContent}
-      <Box
-        sx={{
-          p: 2,
-          width: "240px",
-          position: "fixed",
-          zIndex: 1,
-          bottom: "10px",
-        }}>
-        <List>
-          <ListItem
-            button
-            sx={{
-              marginBottom: "10px",
-              display: "flex",
-            }}>
-            <ListItemIcon>
-              <ExitToAppIcon sx={{ color: "#34de95" }} />
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </ListItem>
-        </List>
-      </Box>
-    </Drawer>
+      <List>
+        <ListItem
+          button
+          sx={{
+            display: "flex",
+          }}
+          onClick={logout}>
+          <ListItemIcon>
+            <ExitToAppIcon sx={{ color: "#34de95" }} />
+          </ListItemIcon>
+          <ListItemText primary="Logout" />
+        </ListItem>
+      </List>
+    </Box>
   );
 };
 

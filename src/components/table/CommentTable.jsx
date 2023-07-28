@@ -17,7 +17,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 
 import React, { useEffect, useState } from "react";
-import { getReports } from "../../api/art.api";
+import { artComments, getComments, getReports } from "../../api/art.api";
 import { useNotification } from "../../helper/notification";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -33,8 +33,12 @@ const descriptions = {
   7: "Tranh/Ảnh có tính xúc phạm 1 cá nhân hoặc tập thể",
   8: "Khác",
 };
-function ReportTable() {
-  const [reports, setReports] = useState([]);
+const status = {
+  0: "hidden",
+  1: "Show",
+};
+function CommentTable() {
+  const [comments, setComments] = useState([]);
   const [createNotification] = useNotification();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
@@ -56,13 +60,13 @@ function ReportTable() {
       showTotal: true,
       listFilter: [],
     };
-    getReports(filter)
+    getComments(filter)
       .then((res) => {
         if (res.data.isError) {
           createNotification(true, res.data.message, "error");
           return;
         }
-        setReports(res.data.result.data);
+        setComments(res.data.result.data);
         setTotalPage(Math.ceil(res.data.result.count / 6));
       })
       .catch((e) => {
@@ -90,13 +94,13 @@ function ReportTable() {
         listFilter: [],
       };
 
-      getReports(filter)
+      getComments(filter)
         .then((res) => {
           if (res.data.isError) {
             createNotification(true, res.data.message, "error");
             return;
           }
-          setReports(res.data.result.data);
+          setComments(res.data.result.data);
           setTotalPage(Math.ceil(res.data.result.count / 6));
         })
         .catch((e) => {
@@ -115,7 +119,7 @@ function ReportTable() {
 
     return () => clearTimeout(timer);
   }, [keyword, currentPage]);
-
+  console.log(comments);
   const handleChangePage = (newPage) => {
     setCurrentPage(newPage);
   };
@@ -140,8 +144,9 @@ function ReportTable() {
     setConfirmationOpen(false);
     hiddenConfirm();
   };
-  console.log(currentReport, "currentReport");
-
+  const getDate = (value) => {
+    return new Date(value).toLocaleDateString();
+  };
   return (
     <Box
       sx={{
@@ -202,16 +207,13 @@ function ReportTable() {
                 backgroundColor: "#34de95",
               }}>
               <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                Report creator
+                Creator
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                Reported person
+                Art name
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                Reason
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                Illegal Type
+                Content
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "600" }}>
                 Art name
@@ -220,45 +222,50 @@ function ReportTable() {
                 Art image
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                Accept
+                Date
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                Status
               </TableCell>
               {/* <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                Delete
-              </TableCell> */}
+                  Delete
+                </TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
-            {reports &&
-              reports.map((e) => (
+            {comments &&
+              comments.map((e) => (
                 <TableRow
                   sx={{
                     backgroundColor: "white",
                     "&:hover": { backgroundColor: "#f5f5f5" },
                   }}>
-                  <TableCell>{e.nickname}</TableCell>
                   <TableCell>{e.userName}</TableCell>
-                  <TableCell>{e.text}</TableCell>
-                  <TableCell>{descriptions[e.illegalType]}</TableCell>
                   <TableCell>{e.artName}</TableCell>
+                  <TableCell>{e.text}</TableCell>
                   <TableCell>
-                    <MuiAvatar src={e.artUrl} sx={{ width: 40, height: 40 }} />
+                    <MuiAvatar
+                      src={e.userAvatar}
+                      sx={{ width: 40, height: 40 }}
+                    />
                   </TableCell>
                   <TableCell>
-                    <IconButton
-                      onClick={() => {
-                        openConfirm(e);
-                      }}>
-                      <CheckCircleOutlineIcon sx={{ color: "#34de95" }} />
-                    </IconButton>
+                    <MuiAvatar
+                      src={e.userAvatar}
+                      sx={{ width: 40, height: 40 }}
+                    />
                   </TableCell>
+                  <TableCell>{getDate(e.created)}</TableCell>
+                  <TableCell>{status[e.statusType]}</TableCell>
+
                   {/* <TableCell>
-                    <IconButton
-                      onClick={() => {
-                        openConfirm(e);
-                      }}>
-                      <DeleteOutlineIcon sx={{ color: "#34de95" }} />
-                    </IconButton>
-                  </TableCell> */}
+                      <IconButton
+                        onClick={() => {
+                          openConfirm(e);
+                        }}>
+                        <DeleteOutlineIcon sx={{ color: "#34de95" }} />
+                      </IconButton>
+                    </TableCell> */}
                 </TableRow>
               ))}
           </TableBody>
@@ -307,4 +314,4 @@ function ReportTable() {
   );
 }
 
-export default ReportTable;
+export default CommentTable;

@@ -16,7 +16,13 @@ export const artComments = async (data, id) => {
     data
   );
 };
-
+export const getComments = async (data) => {
+  return await axios.post(
+    process.env.REACT_APP_BACKEND_HOST +
+      "/api/v1.0/CMS/comment/search-and-pagging",
+    data
+  );
+};
 export const sendComment = async (data) => {
   const accessToken = window.localStorage.getItem("accessToken");
   const userId = jwtDecode(accessToken)["sid"];
@@ -32,6 +38,13 @@ export const rateArt = async (data) => {
   data.userId = userId;
   return await axios.post(
     process.env.REACT_APP_BACKEND_HOST + "/api/v1.0/LDP/rating/add-or-update",
+    data
+  );
+};
+export const rateArtCms = async (data) => {
+  return await axios.post(
+    process.env.REACT_APP_BACKEND_HOST +
+      "/api/v1.0/CMS/rating/search-and-pagging",
     data
   );
 };
