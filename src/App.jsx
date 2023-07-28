@@ -9,6 +9,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { setLogin, setLogout } from "./redux/slice/auth.slice";
 import Test from "./pages/test/Test";
+import ReportTable from "./components/table/ReportTable";
+import Tables from "./components/table/Tables";
+import CommentTable from "./components/table/CommentTable";
+import RateTable from "./components/table/RateTable";
+import ErrorPage from "./pages/error/ErrorPage";
+import LoginAdmin from "./pages/login/LoginAdmin";
 
 function App() {
   const token = window.localStorage.getItem("accessToken");
@@ -25,8 +31,14 @@ function App() {
           <Route path="/art" element={<Art />} />
           {token ? <Route path="/profile" element={<Profile />} /> : ""}
         </Route>
-        <Route path="/admin" element={<Dashboard />}></Route>
-        <Route path="/test" element={<Test />}></Route>
+        <Route path="/admin" element={<Dashboard />}>
+          <Route path="/admin/user" element={<Tables />} />
+          <Route path="/admin/report" element={<ReportTable />} />
+          <Route path="/admin/comments" element={<CommentTable />} />
+          <Route path="/admin/rate" element={<RateTable />} />
+        </Route>
+        <Route path="/admin/login" element={<LoginAdmin />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
   );

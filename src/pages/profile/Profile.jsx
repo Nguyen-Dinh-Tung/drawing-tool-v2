@@ -130,7 +130,7 @@ const Profile = () => {
   const classes = useStyles();
   const [isHovered, setIsHovered] = useState(false);
   const [bgColor, setBgColor] = useState("#E91E63");
-  const [profile, setProfile] = useState();
+  const [profile, setProfile] = useState({});
   const [createNotification] = useNotification();
   const changeBgColor = (data) => {
     setBgColor(data);

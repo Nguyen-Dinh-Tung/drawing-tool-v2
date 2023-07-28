@@ -17,7 +17,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 
 import React, { useEffect, useState } from "react";
-import { getReports } from "../../api/art.api";
+import { getReports, rateArtCms } from "../../api/art.api";
 import { useNotification } from "../../helper/notification";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -33,8 +33,8 @@ const descriptions = {
   7: "Tranh/Ảnh có tính xúc phạm 1 cá nhân hoặc tập thể",
   8: "Khác",
 };
-function ReportTable() {
-  const [reports, setReports] = useState([]);
+function RateTable() {
+  const [raties, setRate] = useState([]);
   const [createNotification] = useNotification();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
@@ -56,13 +56,13 @@ function ReportTable() {
       showTotal: true,
       listFilter: [],
     };
-    getReports(filter)
+    rateArtCms(filter)
       .then((res) => {
         if (res.data.isError) {
           createNotification(true, res.data.message, "error");
           return;
         }
-        setReports(res.data.result.data);
+        setRate(res.data.result.data);
         setTotalPage(Math.ceil(res.data.result.count / 6));
       })
       .catch((e) => {
@@ -90,13 +90,13 @@ function ReportTable() {
         listFilter: [],
       };
 
-      getReports(filter)
+      rateArtCms(filter)
         .then((res) => {
           if (res.data.isError) {
             createNotification(true, res.data.message, "error");
             return;
           }
-          setReports(res.data.result.data);
+          setRate(res.data.result.data);
           setTotalPage(Math.ceil(res.data.result.count / 6));
         })
         .catch((e) => {
@@ -140,8 +140,6 @@ function ReportTable() {
     setConfirmationOpen(false);
     hiddenConfirm();
   };
-  console.log(currentReport, "currentReport");
-
   return (
     <Box
       sx={{
@@ -223,13 +221,13 @@ function ReportTable() {
                 Accept
               </TableCell>
               {/* <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                Delete
-              </TableCell> */}
+                  Delete
+                </TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
-            {reports &&
-              reports.map((e) => (
+            {raties &&
+              raties.map((e) => (
                 <TableRow
                   sx={{
                     backgroundColor: "white",
@@ -252,13 +250,13 @@ function ReportTable() {
                     </IconButton>
                   </TableCell>
                   {/* <TableCell>
-                    <IconButton
-                      onClick={() => {
-                        openConfirm(e);
-                      }}>
-                      <DeleteOutlineIcon sx={{ color: "#34de95" }} />
-                    </IconButton>
-                  </TableCell> */}
+                      <IconButton
+                        onClick={() => {
+                          openConfirm(e);
+                        }}>
+                        <DeleteOutlineIcon sx={{ color: "#34de95" }} />
+                      </IconButton>
+                    </TableCell> */}
                 </TableRow>
               ))}
           </TableBody>
@@ -307,4 +305,4 @@ function ReportTable() {
   );
 }
 
-export default ReportTable;
+export default RateTable;
