@@ -14,6 +14,7 @@ import { artHome, rateArt } from "../../api/art.api";
 import { useNotification } from "../../helper/notification";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { useSelector } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   imageContainer: {
     position: "relative",
@@ -84,55 +85,15 @@ const Art = () => {
   const [arts, setArts] = useState([]);
   const [reRender, setReRender] = useState("");
   const [createNotification] = useNotification();
-  const handleImageClick = (image) => {
-    setOpenDialog(true);
-    setCurrentImage(image);
-  };
+  const [pageSize, setPageSize] = useState(12);
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setCurrentImage(null);
-  };
-  const handleClickLike = (art) => {
-    const newRate = {
-      artId: art.id,
-      userId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      like: true,
-      dislike: false,
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
     };
-    rateArt(newRate)
-      .then((res) => {
-        if (res.data.isError) {
-          createNotification(true, res.data.message, "error");
-        }
-      })
-      .catch((e) => {
-        if (e) {
-          createNotification(true, e.response.data.message, "error");
-        }
-      });
-    setReRender(Date.now());
-  };
+  }, []);
 
-  const handleClickDislike = (art) => {
-    const newRate = {
-      artId: art.id,
-      userId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      dislike: true,
-    };
-    rateArt(newRate)
-      .then((res) => {
-        if (res.data.isError) {
-          createNotification(true, res.data.message, "error");
-        }
-      })
-      .catch((e) => {
-        if (e) {
-          createNotification(true, e.response.data.message, "error");
-        }
-      });
-    setReRender(Date.now());
-  };
   useEffect(() => {
     const filter = {
       filter: {
@@ -147,7 +108,7 @@ const Art = () => {
         },
       ],
       pageIndex: 0,
-      pageSize: -1,
+      pageSize: pageSize,
       showTotal: true,
       listFilter: [],
     };
@@ -164,6 +125,70 @@ const Art = () => {
         }
       });
   }, [reRender]);
+
+  const handleScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop ===
+      document.documentElement.offsetHeight
+    ) {
+      setPageSize((prevPageSize) => prevPageSize + 12);
+    }
+  };
+
+  const isLogin = useSelector((state) => state.auth.isLogin);
+  const handleImageClick = (image) => {
+    setOpenDialog(true);
+    setCurrentImage(image);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setCurrentImage(null);
+  };
+  const handleClickLike = (art) => {
+    const newRate = {
+      artId: art.id,
+      userId: "",
+      like: true,
+      dislike: false,
+    };
+    rateArt(newRate)
+      .then((res) => {
+        console.log(res, "res");
+        if (res.data.isError) {
+          createNotification(true, res.data.message, "error");
+        }
+        createNotification(true, res.data.message, "success");
+      })
+      .catch((e) => {
+        if (e && e.response) {
+          createNotification(true, e.response.data.message, "error");
+        }
+      });
+    setReRender(Date.now());
+  };
+
+  const handleClickDislike = (art) => {
+    const newRate = {
+      artId: art.id,
+      userId: "",
+      dislike: true,
+      like: false,
+    };
+    rateArt(newRate)
+      .then((res) => {
+        if (res.data.isError) {
+          createNotification(true, res.data.message, "error");
+        }
+        createNotification(true, res.data.result.message, "success");
+      })
+      .catch((e) => {
+        if (e && e.response) {
+          createNotification(true, e.response.data.message, "error");
+        }
+      });
+    setReRender(Date.now());
+  };
   return (
     <div style={{ margin: "100px  32px  0" }}>
       <Grid container spacing={4}>
@@ -178,24 +203,32 @@ const Art = () => {
                 onClick={() => handleImageClick(art)}
               />
               <div className={classes.buttonContainer}>
-                <Tooltip title="Like" className={classes.likeButton}>
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleClickLike(art)}>
-                    <FavoriteBorderIcon />
-                  </IconButton>
-                </Tooltip>
+                {isLogin ? (
+                  <Tooltip title="Like" className={classes.likeButton}>
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleClickLike(art)}>
+                      <FavoriteBorderIcon />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  ""
+                )}
                 <Typography variant="subtitle1" className={classes.likesText}>
                   {art.totalLike}
                 </Typography>
-                <Tooltip title="Dislike" className={classes.commentButton}>
-                  <IconButton
-                    color="primary"
-                    sx={{ color: "white" }}
-                    onClick={() => handleImageClick(art)}>
-                    <ThumbDownOffAltIcon />
-                  </IconButton>
-                </Tooltip>
+                {isLogin ? (
+                  <Tooltip title="Dislike" className={classes.commentButton}>
+                    <IconButton
+                      color="primary"
+                      sx={{ color: "white" }}
+                      onClick={() => handleClickDislike(art)}>
+                      <ThumbDownOffAltIcon />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  ""
+                )}
               </div>
             </Paper>
           </Grid>

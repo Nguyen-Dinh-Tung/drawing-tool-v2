@@ -48,8 +48,6 @@ const useStyles = makeStyles((theme) => ({
 
 const CommentSection = ({ art, handleCloseDialog }) => {
   const [comment, setComment] = useState("");
-  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-  const [selectedCommentId, setSelectedCommentId] = useState(null);
 
   const classes = useStyles();
   const isLogin = useSelector((state) => state.auth.isLogin);
@@ -59,11 +57,6 @@ const CommentSection = ({ art, handleCloseDialog }) => {
   const [reRender, setReRender] = useState("");
 
   const dispatch = useDispatch();
-
-  const handleMenuOpen = (event, commentId) => {
-    setMenuAnchorEl(event.currentTarget);
-    setSelectedCommentId(commentId);
-  };
 
   useEffect(() => {
     const filter = {
@@ -99,11 +92,6 @@ const CommentSection = ({ art, handleCloseDialog }) => {
       });
   }, [art, reRender]);
 
-  const handleMenuClose = () => {
-    setMenuAnchorEl(null);
-    setSelectedCommentId(null);
-  };
-
   const handleSendComment = () => {
     if (!comment) return;
     const newComment = {
@@ -135,7 +123,11 @@ const CommentSection = ({ art, handleCloseDialog }) => {
   return (
     <div className={classes.commentSection}>
       <Box className={classes.boxHeader}>
-        <Typography variant="h6">Hello bà con nhé</Typography>
+        <Typography variant="h6">
+          {isLogin
+            ? "Please leave your comment"
+            : "Please login to use additional features"}
+        </Typography>
         {isLogin ? (
           <IconButton
             color="error"
@@ -148,43 +140,51 @@ const CommentSection = ({ art, handleCloseDialog }) => {
           ""
         )}
       </Box>
-      <div>
-        {commentsData.map((commentData) => (
-          <div key={commentData.id} className={classes.comment}>
-            <div className={classes.commentSubContent}>
-              <Avatar
-                src={commentData && commentData.userAvatar}
-                className={classes.commentAvatar}
-              />
-              <div className={classes.commentContent}>
-                <Typography variant="body1" className={classes.commentUserName}>
-                  {commentData && commentData.userName}
-                </Typography>
-                <Typography variant="body2">{commentData.text}</Typography>
+      {isLogin ? (
+        <>
+          <div>
+            {commentsData.map((commentData) => (
+              <div key={commentData.id} className={classes.comment}>
+                <div className={classes.commentSubContent}>
+                  <Avatar
+                    src={commentData && commentData.userAvatar}
+                    className={classes.commentAvatar}
+                  />
+                  <div className={classes.commentContent}>
+                    <Typography
+                      variant="body1"
+                      className={classes.commentUserName}>
+                      {commentData && commentData.userName}
+                    </Typography>
+                    <Typography variant="body2">{commentData.text}</Typography>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <TextField
-          variant="outlined"
-          label="Write a comment"
-          fullWidth
-          margin="normal"
-          value={comment}
-          className={classes.commentTextField}
-          onChange={(e) => setComment(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSendComment();
-            }
-          }}
-        />
-        <IconButton color="primary" onClick={handleSendComment}>
-          <SendIcon />
-        </IconButton>
-      </Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <TextField
+              variant="outlined"
+              label="Write a comment"
+              fullWidth
+              margin="normal"
+              value={comment}
+              className={classes.commentTextField}
+              onChange={(e) => setComment(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSendComment();
+                }
+              }}
+            />
+            <IconButton color="primary" onClick={handleSendComment}>
+              <SendIcon />
+            </IconButton>
+          </Box>
+        </>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

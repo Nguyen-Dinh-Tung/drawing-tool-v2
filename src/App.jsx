@@ -16,6 +16,7 @@ const LazyPaint = React.lazy(() => import("./pages/paint/Paint"));
 const LazyArt = React.lazy(() => import("./pages/art/Art"));
 const LazyProfile = React.lazy(() => import("./pages/profile/Profile"));
 const LazyTables = React.lazy(() => import("./components/table/Tables"));
+const LazyComment = React.lazy(() => import("./components/table/CommentTable"));
 const LazyReportTable = React.lazy(() =>
   import("./components/table/ReportTable")
 );
@@ -45,6 +46,7 @@ function App() {
             <Route path="/admin/user" element={<LazyTables />} />
             <Route path="/admin/report" element={<LazyReportTable />} />
             <Route path="/admin/rate" element={<LazyRateTable />} />
+            <Route path="/admin/comments" element={<LazyComment />} />
             <Route
               path="/admin/permission/:id"
               element={<LazyTableWithPermissions />}

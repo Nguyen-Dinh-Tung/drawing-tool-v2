@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,8 +9,6 @@ import {
   Paper,
   Box,
   Checkbox,
-  PaginationItem,
-  Pagination,
   InputAdornment,
   Typography,
   TextField,
@@ -20,37 +18,21 @@ import _ from "lodash";
 import { useNotification } from "../../helper/notification";
 import { useParams } from "react-router";
 import { getPermission, updatePermission } from "../../api/user.api";
-import { useSelector } from "react-redux";
 import ConfirmationPopup from "../confirm/Confirm";
-const managerData = [
-  "user",
-  "report",
-  "comment",
-  "rate",
-  "package",
-  "role",
-  "art",
-];
 
-const TableWithPermissions = ({ users }) => {
+const TableWithPermissions = () => {
   const [mixData, setMixData] = useState([]);
   const [createNotification] = useNotification();
   const [reRender, setReRender] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(1);
   const [keyword, setKeyword] = useState("");
   const [isConfirmationOpen, setConfirmationOpen] = useState(false);
   const [opentConfirm, setOpenConfirm] = useState(false);
   const [row, setRow] = useState();
   const { id } = useParams();
-  console.log(mixData, "mixdata");
   const handleCheck = async () => {
     if (row) {
-      const mixItem = mixData.find((e) => (e.code = row.code));
-      console.log(mixItem, "mix");
-      row["feature"] = row.checked;
-
-      mixData[mixData.indexOf(mixItem)] = row;
+      const index = mixData.indexOf(row.row);
+      mixData[index][row.feature] = row.checked;
       updatePermission(mixData, id)
         .then((res) => {
           if (res.data.isError) {
@@ -88,9 +70,6 @@ const TableWithPermissions = ({ users }) => {
       });
   }, [reRender]);
 
-  const handleChangePage = (newPage) => {
-    setCurrentPage(newPage);
-  };
   const handleChangeKeyword = (e) => {
     setKeyword(e.target.value);
   };
@@ -107,7 +86,6 @@ const TableWithPermissions = ({ users }) => {
     setOpenConfirm(false);
   };
   const handleConfirm = () => {
-    setConfirmationOpen(true);
     handleCheck();
     hiddenConfirm();
   };
@@ -206,7 +184,7 @@ const TableWithPermissions = ({ users }) => {
                   <TableCell>
                     <Checkbox
                       color="primary"
-                      name={row.isView}
+                      name={"isView"}
                       checked={row.isView}
                       sx={{
                         color: "#34de95",
@@ -222,7 +200,7 @@ const TableWithPermissions = ({ users }) => {
                   <TableCell>
                     <Checkbox
                       color="primary"
-                      name={row.isDelete}
+                      name={"isDelete"}
                       checked={row.isDelete}
                       sx={{
                         color: "#34de95",
@@ -238,7 +216,7 @@ const TableWithPermissions = ({ users }) => {
                   <TableCell>
                     <Checkbox
                       color="primary"
-                      name={row.isUpdate}
+                      name={"isUpdate"}
                       checked={row.isUpdate}
                       sx={{
                         color: "#34de95",
@@ -256,39 +234,6 @@ const TableWithPermissions = ({ users }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: "4%",
-          left: "50%",
-        }}>
-        <Pagination
-          count={totalPage}
-          page={currentPage}
-          onChange={(e, newPage) => {
-            handleChangePage(newPage);
-          }}
-          color="primary"
-          renderItem={(item) => {
-            return (
-              <PaginationItem
-                {...item}
-                sx={{
-                  color: "white",
-                  backgroundColor: "#34de95",
-                  "&.Mui-selected": {
-                    backgroundColor: "#434d5b",
-                    color: "white",
-                  },
-                  "&:hover": {
-                    backgroundColor: "gray",
-                  },
-                }}
-              />
-            );
-          }}
-        />
-      </Box>
       <ConfirmationPopup
         open={opentConfirm}
         message="Are you sure you want to proceed?"
