@@ -57,7 +57,10 @@ const useStyles = makeStyles((theme) => ({
   likesText: {
     color: "#f0f0f0",
   },
-  dialogContent: {},
+  dialogContent: {
+    width: "80vw",
+    height: "90vh",
+  },
   imageSection: {},
   commentSection: {
     paddingTop: 8,
@@ -197,7 +200,7 @@ const Art = () => {
             </Paper>
           </Grid>
         ))}
-        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md">
+        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="lx">
           <DialogContent>
             <div className={classes.dialogContent}>
               <div className={classes.imageSection}>
