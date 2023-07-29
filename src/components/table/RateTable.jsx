@@ -17,10 +17,9 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 
 import React, { useEffect, useState } from "react";
-import { getReports, rateArtCms } from "../../api/art.api";
+import { rateArtCms } from "../../api/art.api";
 import { useNotification } from "../../helper/notification";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ConfirmationPopup from "../confirm/Confirm";
 const descriptions = {
   0: "[---Chọn---]",
@@ -42,7 +41,6 @@ function RateTable() {
   const [timer, setTimer] = useState(null);
   const [isConfirmationOpen, setConfirmationOpen] = useState(false);
   const [opentConfirm, setOpenConfirm] = useState(false);
-  const [currentReport, setCurrentReport] = useState({});
   useEffect(() => {
     const filter = {
       filter: {
@@ -124,7 +122,6 @@ function RateTable() {
   };
 
   const openConfirm = (element) => {
-    setCurrentReport(element);
     setOpenConfirm(true);
   };
   const hiddenConfirm = () => {
@@ -168,7 +165,7 @@ function RateTable() {
           variant="h5"
           component="div"
           gutterBottom>
-          Users dashboard
+          Rating dashboard
         </Typography>
         <TextField
           sx={{

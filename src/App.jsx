@@ -1,22 +1,28 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/home/Home";
-import Paint from "./pages/paint/Paint";
-import Art from "./pages/art/Art";
+import React from "react";
+
 import Dashboard from "./pages/dashboard/Dashboard";
-import Profile from "./pages/profile/Profile";
 import { useDispatch, useSelector } from "react-redux";
 import { Suspense, useEffect } from "react";
 import { setLogin, setLogout } from "./redux/slice/auth.slice";
 import Test from "./pages/test/Test";
-import ReportTable from "./components/table/ReportTable";
-import Tables from "./components/table/Tables";
-import CommentTable from "./components/table/CommentTable";
-import RateTable from "./components/table/RateTable";
 import ErrorPage from "./pages/error/ErrorPage";
 import LoginAdmin from "./pages/login/LoginAdmin";
-import TableWithPermissions from "./components/permission/Permission";
 import Loading from "./components/loading/loading";
+
+const LazyPaint = React.lazy(() => import("./pages/paint/Paint"));
+const LazyArt = React.lazy(() => import("./pages/art/Art"));
+const LazyProfile = React.lazy(() => import("./pages/profile/Profile"));
+const LazyTables = React.lazy(() => import("./components/table/Tables"));
+const LazyReportTable = React.lazy(() =>
+  import("./components/table/ReportTable")
+);
+const LazyRateTable = React.lazy(() => import("./components/table/RateTable"));
+const LazyTableWithPermissions = React.lazy(() =>
+  import("./components/permission/Permission")
+);
 
 function App() {
   const token = window.localStorage.getItem("accessToken");
@@ -25,28 +31,30 @@ function App() {
   useEffect(() => {
     token ? dispatch(setLogin()) : dispatch(setLogout());
   }, []);
+
   return (
     <BrowserRouter>
+      <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Home />}>
-            <Route path="/paint" element={<Paint />} />
-            <Route path="/art" element={<Art />} />
-            {isLogin ? <Route path="/profile" element={<Profile />} /> : ""}
+            <Route path="/paint" element={<LazyPaint />} />
+            <Route path="/art" element={<LazyArt />} />
+            {isLogin ? <Route path="/profile" element={<LazyProfile />} /> : ""}
           </Route>
           <Route path="/admin" element={<Dashboard />}>
-            <Route path="/admin/user" element={<Tables />} />
-            <Route path="/admin/report" element={<ReportTable />} />
-            <Route path="/admin/comments" element={<CommentTable />} />
-            <Route path="/admin/rate" element={<RateTable />} />
+            <Route path="/admin/user" element={<LazyTables />} />
+            <Route path="/admin/report" element={<LazyReportTable />} />
+            <Route path="/admin/rate" element={<LazyRateTable />} />
             <Route
               path="/admin/permission/:id"
-              element={<TableWithPermissions />}
+              element={<LazyTableWithPermissions />}
             />
           </Route>
           <Route path="/admin/login" element={<LoginAdmin />} />
-          <Route path="*" element={<ErrorPage />} />
+          <Route path="/error" element={<ErrorPage />} />
           <Route path="/test" element={<Test />} />
         </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

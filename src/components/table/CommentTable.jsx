@@ -159,7 +159,7 @@ function CommentTable() {
           variant="h5"
           component="div"
           gutterBottom>
-          Users dashboard
+          Comments dashboard
         </Typography>
         <TextField
           sx={{
