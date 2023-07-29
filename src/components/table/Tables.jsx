@@ -19,25 +19,15 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 
 import EditIcon from "@mui/icons-material/Edit";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setModal } from "../../redux/slice/modal.slice";
 import { setUserTarget } from "../../redux/slice/target.slice";
 
 import EngineeringIcon from "@mui/icons-material/Engineering";
-import { setTitle } from "../../redux/slice/title.slice";
-import { setTarget } from "../../redux/slice/table.slice";
 import { findAll } from "../../api/user.api";
 import { useNotification } from "../../helper/notification";
-import ConfirmationPopup from "../confirm/Confirm";
+import { useNavigate } from "react-router";
 
-const disableKey = [
-  "id",
-  "applicationType",
-  "created",
-  "filter",
-  "avatarUrl",
-  "role",
-];
 const gender = {
   0: "Female",
   1: "Male",
@@ -50,14 +40,13 @@ const status = {
 const Tables = () => {
   const [reRender, setRerender] = useState("");
   const [users, setUsers] = useState([]);
-  const table = useSelector((state) => state.table.target);
   const dispatch = useDispatch();
   const [createNotification] = useNotification();
   const [keyword, setKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [timer, setTimer] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const filter = {
       filter: {
@@ -139,9 +128,7 @@ const Tables = () => {
     dispatch(setUserTarget(row));
   };
   const clickSetting = (row) => {
-    dispatch(setUserTarget(row));
-    dispatch(setTitle("Decentralization dashboard"));
-    dispatch(setTarget("permission"));
+    navigate("/admin/permission/" + row.role);
   };
   const handleChangePage = (newPage) => {
     setCurrentPage(newPage);
@@ -150,6 +137,7 @@ const Tables = () => {
   const handleChangeKeyword = (e) => {
     setKeyword(e.target.value);
   };
+  console.log(users, "user");
   useEffect(() => {}, []);
   return (
     <Box
@@ -243,7 +231,7 @@ const Tables = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.length &&
+            {users &&
               users.map((user, rowIndex) => (
                 <TableRow
                   key={rowIndex}
@@ -273,15 +261,15 @@ const Tables = () => {
                       <EditIcon sx={{ color: "#34de95" }} />
                     </IconButton>
                   </TableCell>
-                  {table && table === "user" ? (
-                    <TableCell>
+                  <TableCell>
+                    {user && user.applicationType === 0 ? (
                       <IconButton onClick={() => clickSetting(user)}>
                         <EngineeringIcon sx={{ color: "#34de95" }} />
                       </IconButton>
-                    </TableCell>
-                  ) : (
-                    ""
-                  )}
+                    ) : (
+                      "End user"
+                    )}
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>

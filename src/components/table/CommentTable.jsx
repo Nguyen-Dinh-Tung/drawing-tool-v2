@@ -17,22 +17,9 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 
 import React, { useEffect, useState } from "react";
-import { artComments, getComments, getReports } from "../../api/art.api";
+import { getComments } from "../../api/art.api";
 import { useNotification } from "../../helper/notification";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ConfirmationPopup from "../confirm/Confirm";
-const descriptions = {
-  0: "[---Chọn---]",
-  1: "Tranh/Ảnh có tính nhạy cảm về vấn đề tôn giáo",
-  2: "Tranh/Ảnh có tính nhạy cảm về vấn đề chủng tộc",
-  3: "Tranh/Ảnh có tính nhạy cảm về vấn đề quốc gia",
-  4: "Tranh/Ảnh có tính nhạy cảm về vấn đề trẻ em",
-  5: "Tranh/Ảnh có tính nhạy cảm về vấn đề tình dục",
-  6: "Tranh/Ảnh có tính nhạy cảm về chiến tranh",
-  7: "Tranh/Ảnh có tính xúc phạm 1 cá nhân hoặc tập thể",
-  8: "Khác",
-};
 const status = {
   0: "hidden",
   1: "Show",
@@ -46,7 +33,6 @@ function CommentTable() {
   const [timer, setTimer] = useState(null);
   const [isConfirmationOpen, setConfirmationOpen] = useState(false);
   const [opentConfirm, setOpenConfirm] = useState(false);
-  const [currentReport, setCurrentReport] = useState({});
   useEffect(() => {
     const filter = {
       filter: {
@@ -79,7 +65,6 @@ function CommentTable() {
   }, [currentPage]);
 
   useEffect(() => {
-    // Function to call the API
     const fetchUsers = () => {
       const filter = {
         filter: {
@@ -128,7 +113,6 @@ function CommentTable() {
   };
 
   const openConfirm = (element) => {
-    setCurrentReport(element);
     setOpenConfirm(true);
   };
   const hiddenConfirm = () => {
@@ -175,7 +159,7 @@ function CommentTable() {
           variant="h5"
           component="div"
           gutterBottom>
-          Users dashboard
+          Comments dashboard
         </Typography>
         <TextField
           sx={{

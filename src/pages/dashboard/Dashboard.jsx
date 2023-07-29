@@ -35,7 +35,7 @@ const Dashboard = () => {
         </Box>
         <Modal />
         <Notification />
-        <Loading />
+        {/* <Loading /> */}
       </>
     );
 };

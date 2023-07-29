@@ -170,7 +170,7 @@ function ReportTable() {
           variant="h5"
           component="div"
           gutterBottom>
-          Users dashboard
+          Report dashboard
         </Typography>
         <TextField
           sx={{

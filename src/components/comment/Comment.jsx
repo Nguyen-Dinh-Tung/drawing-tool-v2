@@ -163,23 +163,6 @@ const CommentSection = ({ art, handleCloseDialog }) => {
                 <Typography variant="body2">{commentData.text}</Typography>
               </div>
             </div>
-            <IconButton
-              onClick={(event) => handleMenuOpen(event, commentData.id)}>
-              <MoreVertIcon />
-            </IconButton>
-            {/* <Menu
-              sx={{ float: "right" }}
-              anchorEl={menuAnchorEl}
-              open={selectedCommentId === commentData.id}
-              onClose={handleMenuClose}
-              onClick={handleMenuClose}>
-              <MenuItem
-                onClick={() => {
-                  showReport(commentData);
-                }}>
-                Reply
-              </MenuItem>
-            </Menu> */}
           </div>
         ))}
       </div>
