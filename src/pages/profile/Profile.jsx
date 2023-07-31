@@ -5,6 +5,8 @@ import { Avatar, Box } from "@mui/material";
 import Button from "@mui/material/Button";
 import { getMeApi } from "../../api/auth.api";
 import { useNotification } from "../../helper/notification";
+import { hideLoading } from "../../redux/slice/loading.slice";
+import { useDispatch, useSelector } from "react-redux";
 const followButtonStyle = {
   width: "120px",
   height: "40px",
@@ -132,6 +134,8 @@ const Profile = () => {
   const [bgColor, setBgColor] = useState("#E91E63");
   const [profile, setProfile] = useState({});
   const [createNotification] = useNotification();
+  const loading = useSelector((state) => state.loading);
+  const dispatch = useDispatch();
   const changeBgColor = (data) => {
     setBgColor(data);
   };
@@ -166,13 +170,15 @@ const Profile = () => {
           createNotification(true, res.data.message, "error");
         }
         setProfile(res.data.result);
+        dispatch(hideLoading());
       })
       .catch((e) => {
         if (e) {
           createNotification(true, e.response.data.message, "error");
+          dispatch(hideLoading());
         }
       });
-  }, []);
+  }, [loading]);
   if (profile)
     return (
       <div className={classes.container}>

@@ -19,7 +19,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 
 import EditIcon from "@mui/icons-material/Edit";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setModal } from "../../redux/slice/modal.slice";
 import { setUserTarget } from "../../redux/slice/target.slice";
 
@@ -27,6 +27,7 @@ import EngineeringIcon from "@mui/icons-material/Engineering";
 import { findAll } from "../../api/user.api";
 import { useNotification } from "../../helper/notification";
 import { useNavigate } from "react-router";
+import { hideLoading, showLoading } from "../../redux/slice/loading.slice";
 
 const gender = {
   0: "Female",
@@ -47,6 +48,7 @@ const Tables = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [timer, setTimer] = useState(null);
   const navigate = useNavigate();
+  const loading = useSelector((state) => state.loading);
   useEffect(() => {
     const filter = {
       filter: {
@@ -76,7 +78,8 @@ const Tables = () => {
           return;
         }
       });
-  }, [reRender, currentPage]);
+    dispatch(hideLoading());
+  }, [reRender, currentPage, loading]);
 
   useEffect(() => {
     const fetchUsers = () => {
@@ -115,6 +118,7 @@ const Tables = () => {
         fetchUsers();
       }, 1000)
     );
+    dispatch(hideLoading());
 
     return () => clearTimeout(timer);
   }, [keyword, currentPage]);
@@ -132,12 +136,10 @@ const Tables = () => {
   };
   const handleChangePage = (newPage) => {
     setCurrentPage(newPage);
-    console.log(newPage);
   };
   const handleChangeKeyword = (e) => {
     setKeyword(e.target.value);
   };
-  console.log(users, "user");
   useEffect(() => {}, []);
   return (
     <Box
@@ -263,7 +265,11 @@ const Tables = () => {
                   </TableCell>
                   <TableCell>
                     {user && user.applicationType === 0 ? (
-                      <IconButton onClick={() => clickSetting(user)}>
+                      <IconButton
+                        onClick={() => {
+                          dispatch(showLoading());
+                          clickSetting(user);
+                        }}>
                         <EngineeringIcon sx={{ color: "#34de95" }} />
                       </IconButton>
                     ) : (

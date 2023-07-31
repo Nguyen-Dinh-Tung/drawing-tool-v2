@@ -11,9 +11,11 @@ import Test from "./pages/test/Test";
 import ErrorPage from "./pages/error/ErrorPage";
 import LoginAdmin from "./pages/login/LoginAdmin";
 import Loading from "./components/loading/loading";
+import ArtTable from "./components/table/ArtTable";
 
 const LazyPaint = React.lazy(() => import("./pages/paint/Paint"));
 const LazyArt = React.lazy(() => import("./pages/art/Art"));
+const LazyPremium = React.lazy(() => import("./pages/premium/Premium"));
 const LazyProfile = React.lazy(() => import("./pages/profile/Profile"));
 const LazyTables = React.lazy(() => import("./components/table/Tables"));
 const LazyComment = React.lazy(() => import("./components/table/CommentTable"));
@@ -40,6 +42,7 @@ function App() {
           <Route path="/" element={<Home />}>
             <Route path="/paint" element={<LazyPaint />} />
             <Route path="/art" element={<LazyArt />} />
+            <Route path="/premium" element={<LazyPremium />} />
             {isLogin ? <Route path="/profile" element={<LazyProfile />} /> : ""}
           </Route>
           <Route path="/admin" element={<Dashboard />}>
@@ -47,13 +50,14 @@ function App() {
             <Route path="/admin/report" element={<LazyReportTable />} />
             <Route path="/admin/rate" element={<LazyRateTable />} />
             <Route path="/admin/comments" element={<LazyComment />} />
+            <Route path="/admin/arts" element={<ArtTable />} />
             <Route
               path="/admin/permission/:id"
               element={<LazyTableWithPermissions />}
             />
           </Route>
           <Route path="/admin/login" element={<LoginAdmin />} />
-          <Route path="/error" element={<ErrorPage />} />
+          <Route path="/*" element={<ErrorPage />} />
           <Route path="/test" element={<Test />} />
         </Routes>
       </Suspense>

@@ -20,6 +20,8 @@ import React, { useEffect, useState } from "react";
 import { getComments } from "../../api/art.api";
 import { useNotification } from "../../helper/notification";
 import ConfirmationPopup from "../confirm/Confirm";
+import { hideLoading } from "../../redux/slice/loading.slice";
+import { useDispatch, useSelector } from "react-redux";
 const status = {
   0: "hidden",
   1: "Show",
@@ -32,7 +34,9 @@ function CommentTable() {
   const [keyword, setKeyword] = useState("");
   const [timer, setTimer] = useState(null);
   const [isConfirmationOpen, setConfirmationOpen] = useState(false);
+  const loading = useSelector((state) => state.loading);
   const [opentConfirm, setOpenConfirm] = useState(false);
+  const dispatch = useDispatch();
   useEffect(() => {
     const filter = {
       filter: {
@@ -62,7 +66,8 @@ function CommentTable() {
           return;
         }
       });
-  }, [currentPage]);
+    dispatch(hideLoading());
+  }, [currentPage, loading]);
 
   useEffect(() => {
     const fetchUsers = () => {
@@ -101,10 +106,10 @@ function CommentTable() {
         fetchUsers();
       }, 1000)
     );
+    dispatch(hideLoading());
 
     return () => clearTimeout(timer);
   }, [keyword, currentPage]);
-  console.log(comments);
   const handleChangePage = (newPage) => {
     setCurrentPage(newPage);
   };
@@ -112,9 +117,6 @@ function CommentTable() {
     setKeyword(e.target.value);
   };
 
-  const openConfirm = (element) => {
-    setOpenConfirm(true);
-  };
   const hiddenConfirm = () => {
     setOpenConfirm(false);
   };
@@ -124,7 +126,6 @@ function CommentTable() {
   };
 
   const handleCancel = () => {
-    console.log("cancel");
     setConfirmationOpen(false);
     hiddenConfirm();
   };
