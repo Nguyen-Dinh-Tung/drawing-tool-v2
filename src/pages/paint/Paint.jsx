@@ -162,14 +162,20 @@ function Paint(props) {
           value={drawingColor}
           onChange={(e) => setDrawingColor(e.target.value)}
         />
-        <button onClick={() => setShape("line")}>Draw Line</button>
-        <button onClick={() => setShape("rectangle")}>Draw Rectangle</button>
-        <button onClick={() => setShape("circle")}>Draw circle</button>
+        <button onClick={() => setShape("line")}>
+          <RemoveIcon></RemoveIcon>
+        </button>
+        <button onClick={() => setShape("rectangle")}>
+          <Crop32Icon />
+        </button>
+        <button onClick={() => setShape("circle")}>
+          <PanoramaFishEyeIcon />
+        </button>
         <button
           onClick={() => {
             setShape("erase");
           }}>
-          Erase
+          <AutoFixHighIcon />
         </button>
         <div className="flex gap-2">
           Size:
