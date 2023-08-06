@@ -5,14 +5,17 @@ import FilerobotImageEditor, {
 } from "react-filerobot-image-editor";
 import { useDispatch } from "react-redux";
 import { hideLoading } from "../../redux/slice/loading.slice";
-
+import jwtDecode from "jwt-decode";
+import { createArt } from "../../api/art.api";
+import { useNotification } from "../../helper/notification";
+import { hiddenModal } from "../../redux/slice/modal.slice";
 const Paint = () => {
   const [imageUrl, setImageUrl] = useState("/paper.jpg");
+  const [createNotification] = useNotification();
   const dispatch = useDispatch();
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
-
     reader.onload = () => {
       setImageUrl(reader.result);
     };
@@ -22,8 +25,30 @@ const Paint = () => {
     }
   };
 
-  const handleSaveImage = async (editedImageObject, designState) => {
-    console.log("saved", editedImageObject, designState);
+  const handleSaveImage = async (editedImageObject) => {
+    const accessToken = window.localStorage.getItem("accessToken");
+    const userId = jwtDecode(accessToken)["sid"];
+    const formData = new FormData();
+    formData.append("ImageName", editedImageObject);
+    formData.append("UserId", userId);
+    formData.append("Name", editedImageObject.name);
+    formData.append("StatusType", 1);
+    console.log(editedImageObject, "editedImageObject");
+    createArt(formData)
+      .then((res) => {
+        if (res.data.isError) {
+          createNotification(true, res.data.message, "error");
+          return;
+        }
+        createNotification(true, res.data.message, "success");
+      })
+      .catch((e) => {
+        if (e) {
+          createNotification(true, e.response.data.message, "error");
+          return;
+        }
+      });
+    dispatch(hideLoading());
   };
 
   useEffect(() => {
