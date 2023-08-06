@@ -3,16 +3,17 @@ import FilerobotImageEditor, {
   TABS,
   TOOLS,
 } from "react-filerobot-image-editor";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { hideLoading } from "../../redux/slice/loading.slice";
 import jwtDecode from "jwt-decode";
 import { createArt } from "../../api/art.api";
 import { useNotification } from "../../helper/notification";
-import { hiddenModal } from "../../redux/slice/modal.slice";
 const Paint = () => {
   const [imageUrl, setImageUrl] = useState("/paper.jpg");
+  const [url, setUrl] = useState("");
   const [createNotification] = useNotification();
   const dispatch = useDispatch();
+  const loading = useSelector((state) => state.loading);
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -28,12 +29,35 @@ const Paint = () => {
   const handleSaveImage = async (editedImageObject) => {
     const accessToken = window.localStorage.getItem("accessToken");
     const userId = jwtDecode(accessToken)["sid"];
+
+    const blob = await new Promise((resolve) =>
+      editedImageObject.imageCanvas.toBlob((blob) => resolve(blob))
+    );
+    const newFileName =
+      editedImageObject.name + `.${editedImageObject.mimeType.split("/")[1]}`;
+
+    const file = new File([blob], newFileName, {
+      type: editedImageObject.mimeType,
+    });
+
+    const obUrl = URL.createObjectURL(file);
+    setUrl(obUrl);
     const formData = new FormData();
-    formData.append("ImageName", editedImageObject);
+    formData.append("ImageName", file);
     formData.append("UserId", userId);
-    formData.append("Name", editedImageObject.name);
+    formData.append(
+      "Name",
+      editedImageObject.name +
+        `.${file.type.split("/")[file.type.split("/").length - 1]}`
+    );
+    console.log(
+      editedImageObject.name +
+        `.${file.type.split("/")[file.type.split("/").length - 1]}`,
+      ``
+    );
+    console.log(file, "file");
+    formData.append("Id", "");
     formData.append("StatusType", 1);
-    console.log(editedImageObject, "editedImageObject");
     createArt(formData)
       .then((res) => {
         if (res.data.isError) {
@@ -48,13 +72,15 @@ const Paint = () => {
           return;
         }
       });
+
     dispatch(hideLoading());
   };
 
   useEffect(() => {
     dispatch(hideLoading());
-  }, []);
+  }, [loading]);
 
+  useEffect(() => {}, []);
   return (
     <div className="h-[95vh] bg-[#2B2929]">
       <div className="h-[85vh] py-5">

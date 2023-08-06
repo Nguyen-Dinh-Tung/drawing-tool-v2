@@ -86,7 +86,7 @@ const Art = () => {
   const [arts, setArts] = useState([]);
   const [reRender, setReRender] = useState("");
   const [createNotification] = useNotification();
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(14);
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.loading);
 
@@ -129,13 +129,13 @@ const Art = () => {
           dispatch(hideLoading());
         }
       });
-  }, [reRender, loading]);
+  }, [reRender, loading, pageSize]);
 
   const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop ===
-      document.documentElement.offsetHeight
-    ) {
+    const isBottomOfPage =
+      window.innerHeight + document.documentElement.scrollTop + 10 >=
+      document.documentElement.offsetHeight;
+    if (isBottomOfPage) {
       setPageSize((prevPageSize) => prevPageSize + 12);
     }
   };
