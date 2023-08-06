@@ -23,6 +23,8 @@ import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useNavigate } from "react-router";
 import { showLoading } from "../../redux/slice/loading.slice";
+import PanoramaIcon from "@mui/icons-material/Panorama";
+
 const useStyles = makeStyles((theme) => ({
   listItem: {
     border: "solid #ccc",
@@ -35,29 +37,38 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const clickUser = () => {
+    dispatch(showLoading());
     dispatch(setTitle("Users dashboard"));
     dispatch(setTarget("user"));
     navigate("/admin/user");
   };
   const clickReport = () => {
+    dispatch(showLoading());
     dispatch(setTitle("Report dashboard"));
     dispatch(setTarget("report"));
     navigate("/admin/report");
   };
   const clickComments = () => {
+    dispatch(showLoading());
     dispatch(setTitle("Comments dashboard"));
     dispatch(setTarget("comments"));
     navigate("/admin/comments");
   };
   const clickRate = () => {
+    dispatch(showLoading());
     dispatch(setTitle("Rate dashboard"));
     dispatch(setTarget("rate"));
     navigate("/admin/rate");
+  };
+  const clickArt = () => {
+    dispatch(showLoading());
+    navigate("/admin/arts");
   };
   const logout = () => {
     window.localStorage.removeItem("adminToken");
     navigate("/admin/login");
   };
+
   const sidebarContent = (
     <Box sx={{ p: 2, width: "280px" }}>
       <Box sx={{ display: "flex", justifyContent: "center", mb: "18px" }}>
@@ -78,6 +89,17 @@ const Sidebar = () => {
             <PersonIcon sx={{ color: "#34de95" }} />
           </ListItemIcon>
           <ListItemText primary="Users" />
+        </ListItem>
+        <ListItem
+          button
+          onClick={clickArt}
+          sx={{
+            marginBottom: "10px",
+          }}>
+          <ListItemIcon>
+            <PanoramaIcon sx={{ color: "#34de95" }} />
+          </ListItemIcon>
+          <ListItemText primary="Art" />
         </ListItem>
         <ListItem
           button
@@ -105,6 +127,7 @@ const Sidebar = () => {
 
         <ListItem
           button
+          onClick={clickRate}
           sx={{
             marginBottom: "10px",
             display: "flex",
@@ -112,7 +135,7 @@ const Sidebar = () => {
           <ListItemIcon>
             <ThumbUpOffAltIcon sx={{ color: "#34de95" }} />
           </ListItemIcon>
-          <ListItemText primary="Rate" onClick={clickRate} />
+          <ListItemText primary="Rate" />
         </ListItem>
       </List>
     </Box>

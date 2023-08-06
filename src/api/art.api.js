@@ -66,3 +66,10 @@ export const getReports = async (data) => {
     data
   );
 };
+
+export const createArt = async (data) => {
+  return await axios.post(
+    process.env.REACT_APP_BACKEND_HOST + "/api/v1.0/LDP/art/upload",
+    data
+  );
+};

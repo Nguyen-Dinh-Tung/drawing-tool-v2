@@ -22,6 +22,8 @@ import { useNotification } from "../../helper/notification";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ConfirmationPopup from "../confirm/Confirm";
+import { hideLoading } from "../../redux/slice/loading.slice";
+import { useDispatch, useSelector } from "react-redux";
 const descriptions = {
   0: "[---Chọn---]",
   1: "Tranh/Ảnh có tính nhạy cảm về vấn đề tôn giáo",
@@ -43,6 +45,9 @@ function ReportTable() {
   const [isConfirmationOpen, setConfirmationOpen] = useState(false);
   const [opentConfirm, setOpenConfirm] = useState(false);
   const [currentReport, setCurrentReport] = useState({});
+  const loading = useSelector((state) => state.loading);
+
+  const dispatch = useDispatch();
   useEffect(() => {
     const filter = {
       filter: {
@@ -72,10 +77,10 @@ function ReportTable() {
           return;
         }
       });
-  }, [currentPage]);
+    dispatch(hideLoading());
+  }, [currentPage, loading]);
 
   useEffect(() => {
-    // Function to call the API
     const fetchUsers = () => {
       const filter = {
         filter: {
@@ -112,6 +117,7 @@ function ReportTable() {
         fetchUsers();
       }, 1000)
     );
+    dispatch(hideLoading());
 
     return () => clearTimeout(timer);
   }, [keyword, currentPage]);
@@ -136,11 +142,9 @@ function ReportTable() {
   };
 
   const handleCancel = () => {
-    console.log("cancel");
     setConfirmationOpen(false);
     hiddenConfirm();
   };
-  console.log(currentReport, "currentReport");
 
   return (
     <Box

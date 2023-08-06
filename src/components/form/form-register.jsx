@@ -56,7 +56,6 @@ export default function FormRegister(props) {
     Object.keys(user).map((e) => {
       data.append(e, user[e]);
     });
-    dispatch(showLoading());
     await registerApi(data)
       .then((res) => {
         if (res.data.isError) {
@@ -97,7 +96,10 @@ export default function FormRegister(props) {
           <Box
             component="form"
             ref={formRef}
-            onSubmit={handleSubmit}
+            onSubmit={(e) => {
+              handleSubmit(e);
+              dispatch(showLoading());
+            }}
             sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>

@@ -14,7 +14,8 @@ import { artHome, rateArt } from "../../api/art.api";
 import { useNotification } from "../../helper/notification";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { hideLoading } from "../../redux/slice/loading.slice";
 const useStyles = makeStyles((theme) => ({
   imageContainer: {
     position: "relative",
@@ -86,6 +87,8 @@ const Art = () => {
   const [reRender, setReRender] = useState("");
   const [createNotification] = useNotification();
   const [pageSize, setPageSize] = useState(12);
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.loading);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -118,13 +121,15 @@ const Art = () => {
           createNotification(true, res.data.message, "error");
         }
         setArts(res.data.result.data);
+        dispatch(hideLoading());
       })
       .catch((e) => {
         if (e) {
           createNotification(true, e.response.data.message, "error");
+          dispatch(hideLoading());
         }
       });
-  }, [reRender]);
+  }, [reRender, loading]);
 
   const handleScroll = () => {
     if (
@@ -154,7 +159,6 @@ const Art = () => {
     };
     rateArt(newRate)
       .then((res) => {
-        console.log(res, "res");
         if (res.data.isError) {
           createNotification(true, res.data.message, "error");
         }

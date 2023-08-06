@@ -19,6 +19,8 @@ import { useNotification } from "../../helper/notification";
 import { useParams } from "react-router";
 import { getPermission, updatePermission } from "../../api/user.api";
 import ConfirmationPopup from "../confirm/Confirm";
+import { useDispatch } from "react-redux";
+import { hideLoading } from "../../redux/slice/loading.slice";
 
 const TableWithPermissions = () => {
   const [mixData, setMixData] = useState([]);
@@ -29,6 +31,7 @@ const TableWithPermissions = () => {
   const [opentConfirm, setOpenConfirm] = useState(false);
   const [row, setRow] = useState();
   const { id } = useParams();
+  const dispatch = useDispatch();
   const handleCheck = async () => {
     if (row) {
       const index = mixData.indexOf(row.row);
@@ -68,6 +71,7 @@ const TableWithPermissions = () => {
           return;
         }
       });
+    dispatch(hideLoading());
   }, [reRender]);
 
   const handleChangeKeyword = (e) => {
