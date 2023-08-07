@@ -73,3 +73,64 @@ export const createArt = async (data) => {
     data
   );
 };
+
+export const deleteComment = async (id) => {
+  try {
+    let resp;
+    await axios
+      .delete(
+        process.env.REACT_APP_BACKEND_HOST +
+          "/api/v1.0/CMS/comment/delete-comment?id=" +
+          id
+      )
+      .then((res) => (resp = res));
+    return resp;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const deleteReport = async (id) => {
+  try {
+    let resp;
+    await axios
+      .delete(
+        process.env.REACT_APP_BACKEND_HOST +
+          "/api/v1.0/CMS/comment/delete-comment?id=" +
+          id
+      )
+      .then((res) => (resp = res));
+    return resp;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const updateReport = async (data) => {
+  try {
+    let resp;
+    await axios
+      .post(
+        process.env.REACT_APP_BACKEND_HOST + "/api/v1.0/CMS/report/update",
+        data
+      )
+      .then((res) => (resp = res));
+    return resp;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const deleteArt = async (id) => {
+  try {
+    let resp;
+    await axios
+      .delete(
+        process.env.REACT_APP_BACKEND_HOST + "/api/v1.0/CMS/art/delete?id=" + id
+      )
+      .then((res) => (resp = res));
+    return resp;
+  } catch (e) {
+    return e;
+  }
+};

@@ -17,11 +17,13 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 
 import React, { useEffect, useState } from "react";
-import { getComments } from "../../api/art.api";
+import { deleteComment, getComments } from "../../api/art.api";
 import { useNotification } from "../../helper/notification";
 import ConfirmationPopup from "../confirm/Confirm";
 import { hideLoading } from "../../redux/slice/loading.slice";
 import { useDispatch, useSelector } from "react-redux";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+
 const status = {
   0: "hidden",
   1: "Show",
@@ -36,6 +38,9 @@ function CommentTable() {
   const [isConfirmationOpen, setConfirmationOpen] = useState(false);
   const loading = useSelector((state) => state.loading);
   const [opentConfirm, setOpenConfirm] = useState(false);
+  const [target, setTarget] = useState("");
+  const [reRender, setRerender] = useState("");
+
   const dispatch = useDispatch();
   useEffect(() => {
     const filter = {
@@ -109,7 +114,7 @@ function CommentTable() {
     dispatch(hideLoading());
 
     return () => clearTimeout(timer);
-  }, [keyword, currentPage]);
+  }, [keyword, currentPage, reRender]);
   const handleChangePage = (newPage) => {
     setCurrentPage(newPage);
   };
@@ -120,11 +125,13 @@ function CommentTable() {
   const hiddenConfirm = () => {
     setOpenConfirm(false);
   };
-  const handleConfirm = () => {
-    setConfirmationOpen(true);
-    hiddenConfirm();
+  const handleConfirm = async () => {
+    console.log(target, "target");
   };
-
+  const openConfirm = (id) => {
+    setTarget(id);
+    setOpenConfirm(true);
+  };
   const handleCancel = () => {
     setConfirmationOpen(false);
     hiddenConfirm();
@@ -212,9 +219,9 @@ function CommentTable() {
               <TableCell sx={{ color: "white", fontWeight: "600" }}>
                 Status
               </TableCell>
-              {/* <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                  Delete
-                </TableCell> */}
+              <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                Feature
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -242,15 +249,16 @@ function CommentTable() {
                   </TableCell>
                   <TableCell>{getDate(e.created)}</TableCell>
                   <TableCell>{status[e.statusType]}</TableCell>
-
-                  {/* <TableCell>
-                      <IconButton
-                        onClick={() => {
-                          openConfirm(e);
-                        }}>
-                        <DeleteOutlineIcon sx={{ color: "#34de95" }} />
-                      </IconButton>
-                    </TableCell> */}
+                  <TableCell>
+                    <IconButton
+                      onClick={() => {
+                        openConfirm(e.id);
+                      }}>
+                      <DeleteOutlineIcon
+                        sx={{ color: "#34de95", cursor: "pointer" }}
+                      />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>
