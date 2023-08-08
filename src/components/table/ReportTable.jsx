@@ -17,13 +17,17 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 
 import React, { useEffect, useState } from "react";
-import { getReports } from "../../api/art.api";
+import { getReports, updateReport } from "../../api/art.api";
 import { useNotification } from "../../helper/notification";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ConfirmationPopup from "../confirm/Confirm";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
 import { hideLoading } from "../../redux/slice/loading.slice";
 import { useDispatch, useSelector } from "react-redux";
+import EditIcon from "@mui/icons-material/Edit";
+import { setModal } from "../../redux/slice/modal.slice";
+import { setUserTarget } from "../../redux/slice/target.slice";
+
 const descriptions = {
   0: "[---Chọn---]",
   1: "Tranh/Ảnh có tính nhạy cảm về vấn đề tôn giáo",
@@ -35,6 +39,11 @@ const descriptions = {
   7: "Tranh/Ảnh có tính xúc phạm 1 cá nhân hoặc tập thể",
   8: "Khác",
 };
+const select = {
+  0: "Select",
+  1: "Active",
+  2: "NonActive",
+};
 function ReportTable() {
   const [reports, setReports] = useState([]);
   const [createNotification] = useNotification();
@@ -42,11 +51,9 @@ function ReportTable() {
   const [totalPage, setTotalPage] = useState(1);
   const [keyword, setKeyword] = useState("");
   const [timer, setTimer] = useState(null);
-  const [isConfirmationOpen, setConfirmationOpen] = useState(false);
-  const [opentConfirm, setOpenConfirm] = useState(false);
-  const [currentReport, setCurrentReport] = useState({});
+  const [reRender, setReRender] = useState("");
   const loading = useSelector((state) => state.loading);
-
+  const render = useSelector((state) => state.loading);
   const dispatch = useDispatch();
   useEffect(() => {
     const filter = {
@@ -78,7 +85,7 @@ function ReportTable() {
         }
       });
     dispatch(hideLoading());
-  }, [currentPage, loading]);
+  }, [currentPage, loading, reRender, render]);
 
   useEffect(() => {
     const fetchUsers = () => {
@@ -129,21 +136,9 @@ function ReportTable() {
     setKeyword(e.target.value);
   };
 
-  const openConfirm = (element) => {
-    setCurrentReport(element);
-    setOpenConfirm(true);
-  };
-  const hiddenConfirm = () => {
-    setOpenConfirm(false);
-  };
-  const handleConfirm = () => {
-    setConfirmationOpen(true);
-    hiddenConfirm();
-  };
-
-  const handleCancel = () => {
-    setConfirmationOpen(false);
-    hiddenConfirm();
+  const openCOnfirm = (report) => {
+    dispatch(setModal({ open: true, content: "reportUpdate" }));
+    dispatch(setUserTarget(report));
   };
 
   return (
@@ -221,14 +216,17 @@ function ReportTable() {
                 Art name
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                Status type
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "600" }}>
                 Art image
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "600" }}>
                 Accept
               </TableCell>
-              {/* <TableCell sx={{ color: "white", fontWeight: "600" }}>
-                Delete
-              </TableCell> */}
+              <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                Lock
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -244,25 +242,25 @@ function ReportTable() {
                   <TableCell>{e.text}</TableCell>
                   <TableCell>{descriptions[e.illegalType]}</TableCell>
                   <TableCell>{e.artName}</TableCell>
+                  <TableCell>{select[e.statusType]}</TableCell>
                   <TableCell>
                     <MuiAvatar src={e.artUrl} sx={{ width: 40, height: 40 }} />
                   </TableCell>
                   <TableCell>
-                    <IconButton
-                      onClick={() => {
-                        openConfirm(e);
-                      }}>
+                    <IconButton onClick={() => {}}>
                       <CheckCircleOutlineIcon sx={{ color: "#34de95" }} />
                     </IconButton>
                   </TableCell>
-                  {/* <TableCell>
-                    <IconButton
-                      onClick={() => {
-                        openConfirm(e);
-                      }}>
-                      <DeleteOutlineIcon sx={{ color: "#34de95" }} />
+                  <TableCell>
+                    <IconButton>
+                      <EditIcon
+                        sx={{ color: "#34de95", cursor: "pointer" }}
+                        onClick={() => {
+                          openCOnfirm(e);
+                        }}
+                      />
                     </IconButton>
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>
@@ -301,12 +299,6 @@ function ReportTable() {
           }}
         />
       </Box>
-      <ConfirmationPopup
-        open={opentConfirm}
-        message="Are you sure you want to proceed?"
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      />
     </Box>
   );
 }

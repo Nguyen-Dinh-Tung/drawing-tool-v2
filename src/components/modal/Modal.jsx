@@ -8,6 +8,7 @@ import FormLogin from "../form/form-login";
 import FormRegister from "../form/form-register";
 import FormEdit from "../form/form-edit";
 import FormReport from "../form/form-report";
+import ReportSelect from "../select/ReportSelect";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -21,6 +22,7 @@ export default function Modal(props) {
     register: <FormRegister />,
     edit: <FormEdit />,
     report: <FormReport />,
+    reportUpdate: <ReportSelect />,
   };
   const dispatch = useDispatch();
   const handleClose = () => {

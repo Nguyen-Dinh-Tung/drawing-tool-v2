@@ -15,11 +15,12 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import React, { useEffect, useState } from "react";
-import { artHome, getComments } from "../../api/art.api";
+import { artHome, deleteArt } from "../../api/art.api";
 import { useNotification } from "../../helper/notification";
 import ConfirmationPopup from "../confirm/Confirm";
 import { hideLoading } from "../../redux/slice/loading.slice";
 import { useDispatch } from "react-redux";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 const status = {
   0: "hidden",
   1: "Show",
@@ -33,8 +34,10 @@ function ArtTable() {
   const [timer, setTimer] = useState(null);
   const [isConfirmationOpen, setConfirmationOpen] = useState(false);
   const [opentConfirm, setOpenConfirm] = useState(false);
+  const [target, setTarget] = useState("");
+  const [reRender, setReRender] = useState("");
+
   const dispatch = useDispatch();
-  console.log(arts, "art");
   useEffect(() => {
     const filter = {
       filter: {
@@ -65,7 +68,7 @@ function ArtTable() {
         }
       });
     dispatch(hideLoading());
-  }, [currentPage]);
+  }, [currentPage, reRender]);
 
   useEffect(() => {
     if (!keyword) return;
@@ -118,9 +121,20 @@ function ArtTable() {
   const hiddenConfirm = () => {
     setOpenConfirm(false);
   };
-  const handleConfirm = () => {
-    setConfirmationOpen(true);
+  const handleConfirm = async () => {
+    const res = await deleteArt(target);
+    if (res.response || res.isError) {
+      createNotification(true, res.message, "error");
+      return;
+    }
+    createNotification(true, res.data.message, "success");
     hiddenConfirm();
+    setReRender(Date.now());
+  };
+
+  const openConfimr = (id) => {
+    setTarget(id);
+    setOpenConfirm(true);
   };
 
   const handleCancel = () => {
@@ -213,6 +227,9 @@ function ArtTable() {
               <TableCell sx={{ color: "white", fontWeight: "600" }}>
                 Status
               </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "600" }}>
+                Feature
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -233,6 +250,12 @@ function ArtTable() {
                   </TableCell>
                   <TableCell>{getDate(e.created)}</TableCell>
                   <TableCell>{status[e.statusType]}</TableCell>
+                  <TableCell>
+                    <DeleteOutlineIcon
+                      onClick={() => openConfimr(e.id)}
+                      sx={{ color: "#34de95", cursor: "pointer" }}
+                    />
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>
